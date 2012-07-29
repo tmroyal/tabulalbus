@@ -12,6 +12,5 @@ Button.prototype.init = function(x,y){
 	}).appendTo('body');
 	
 	this.setPosition(x,y);
-	$('#'+this.id).click(this.onclick);
+	$('#'+this.id).bind('click',this,this.click_handler);
 };
-

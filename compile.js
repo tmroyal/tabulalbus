@@ -7,7 +7,7 @@ new compressor.minify({
 				,'./app/UIInput.js'
 				,'./app/UIElement.js'
 				,'./app/Button.js'
-				,'./app/HSliderButton.js'
+				,'./app/Slider.js'
 				,'./app/app.js'
 			],
     fileOut: 'tabulalbus.js',

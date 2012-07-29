@@ -50,15 +50,14 @@ Button.prototype.init = function(x,y){
 	}).appendTo('body');
 	
 	this.setPosition(x,y);
-	$('#'+this.id).click(this.onclick);
+	$('#'+this.id).bind('click',this,this.click_handler);
 };
-
 
 function HSliderButton(x,y,range,id,callback){
 	UIInput.call(this,x,y,id,{});
 	this.init(x,y);
 	this.x1 = x;
-	this.x2 = x+range;
+	this.x2 = x+range-12;
 	this.range = range;
 	// callback sould take a range of zero to one (float)
 	this.callback = callback || {};
@@ -73,16 +72,14 @@ HSliderButton.prototype.init = function(x,y) {
 	}).appendTo('body');
 	
 	this.setPosition(x,y);
-	
-	// object must be passed because jQuery does not support 
-	// using the this keyword for objects. this in the context of
-	// events reffers to the parent element
+
 	$('#'+this.id).bind('mousedown',this,this.mouseDown);
 };
 
 HSliderButton.prototype.mouseMove = function(e){
+	// note, jquery rewrites 'this'
 	var sbutton = e.data,
-		new_x = e.pageX-15;
+		new_x = e.pageX-12;
 
 	if(new_x > sbutton.x1 && new_x < sbutton.x2){
 		sbutton.setPosition(new_x,sbutton.y);
@@ -97,36 +94,51 @@ HSliderButton.prototype.mouseMove = function(e){
 };
 
 HSliderButton.prototype.mouseUp = function(e){
-	var sbutton = e.data;
-
+	// note, jquery rewrites 'this'
 	$(document).unbind('mouseup');
 	$(document).unbind('mousemove');
-
-	sbutton.setPosition(e.pageX,sbutton.y);
-	sbutton.callback((sbutton.x-sbutton.x1)/sbutton.range);	
 };
 
 
 HSliderButton.prototype.mouseDown = function(e) {
+	// note, jquery rewrites 'this'
 	var sbutton = e.data;
 	$(document).bind('mousemove',sbutton,sbutton.mouseMove);
 	$(document).bind('mouseup',sbutton,sbutton.mouseUp);
 };
 
+// ------------------------------------
+
+function Slider(x,y,range,id,callback){
+	this.button = new HSliderButton(x,y,range,id+'btn',callback);
+	var ypos = y+12,
+		xpos = x+12,
+		width = range-12;
+	
+	$('<div/>',{
+		'class': 'slider_bar',
+		'id': this.id,
+	}).appendTo('body')
+	  .css({
+		'width': range+'px',
+		'top': ypos+'px',
+		'left': x+'px'
+	});
+
+};
 $(document).ready(function(){
 	var cb = function(){alert('hello');};
 	var button = new Button(
 							30,
 							400,
 							'button',
-							function(){alert('hello')}
+							cb
 						);
 						
 	var cb = function(x){
-		$('#slider_button').css({
+		$('#sliderbtn').css({
 			'background-color' : 'rgb(255,0,'+Math.round(x*250)+')'}
       	);
-		console.log(x*250);
 	}
-	var slButton = new HSliderButton(0,20,400,'slider_button',cb);
+	var slButton = new Slider(0,20,400,'slider',cb);
 });

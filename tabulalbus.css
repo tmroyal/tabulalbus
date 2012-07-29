@@ -16,10 +16,7 @@ div.slider_button{
 div.slider_bar{
 	position: absolute;
  	background-color: #6e6e6e;
-	width: 85px;
-	left: 0px;
 	height: 2px;
-	top: 6px;
 	z-index: -20;
 	padding: 0px;
 	margin: 0px;

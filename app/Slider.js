@@ -1,6 +1,11 @@
-function HSliderButton(x,y,id){
+function HSliderButton(x,y,range,id,callback){
 	UIInput.call(this,x,y,id,{});
 	this.init(x,y);
+	this.x1 = x;
+	this.x2 = x+range-12;
+	this.range = range;
+	// callback sould take a range of zero to one (float)
+	this.callback = callback || {};
 }
 
 HSliderButton.prototype = subclassOf(UIInput);
@@ -12,25 +17,57 @@ HSliderButton.prototype.init = function(x,y) {
 	}).appendTo('body');
 	
 	this.setPosition(x,y);
-	
-	$('#'+this.id).bind('mousedown',this,this.mouseDown)	
+
+	$('#'+this.id).bind('mousedown',this,this.mouseDown);
 };
 
 HSliderButton.prototype.mouseMove = function(e){
-	e.data.setPosition(e.pageX-15,e.pageY-15);
+	// note, jquery rewrites 'this'
+	var sbutton = e.data,
+		new_x = e.pageX-12;
+
+	if(new_x > sbutton.x1 && new_x < sbutton.x2){
+		sbutton.setPosition(new_x,sbutton.y);
+		sbutton.callback((sbutton.x-sbutton.x1)/sbutton.range);
+	} else if(new_x < sbutton.x1){
+		sbutton.setPosition(sbutton.x1,sbutton.y);
+		sbutton.callback(0);
+	} else if(new_x > sbutton.x2){
+		sbutton.setPosition(sbutton.x2,sbutton.y);
+		sbutton.callback(1);
+	}
 };
 
 HSliderButton.prototype.mouseUp = function(e){
-	$('body').unbind('mouseup');
-	$('#'+e.data.id).unbind('mousemove');	
+	// note, jquery rewrites 'this'
+	$(document).unbind('mouseup');
+	$(document).unbind('mousemove');
 };
 
 
 HSliderButton.prototype.mouseDown = function(e) {
-	$('#'+e.data.id).bind('mousemove',e.data,e.data.mouseMove);
-	$(document).bind('mouseup',e.data,e.data.mouseUp);
+	// note, jquery rewrites 'this'
+	var sbutton = e.data;
+	$(document).bind('mousemove',sbutton,sbutton.mouseMove);
+	$(document).bind('mouseup',sbutton,sbutton.mouseUp);
 };
 
+// ------------------------------------
 
+function Slider(x,y,range,id,callback){
+	this.button = new HSliderButton(x,y,range,id+'btn',callback);
+	var ypos = y+12,
+		xpos = x+12,
+		width = range-12;
+	
+	$('<div/>',{
+		'class': 'slider_bar',
+		'id': this.id,
+	}).appendTo('body')
+	  .css({
+		'width': range+'px',
+		'top': ypos+'px',
+		'left': x+'px'
+	});
 
-
+};
