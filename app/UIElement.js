@@ -2,7 +2,6 @@ function UIElement(x,y,id){
 	this.x = x;
 	this.y = y;
 	this.id = id;
-
 }
 
 UIElement.prototype.setPosition = function(x,y) {
@@ -13,4 +12,3 @@ UIElement.prototype.setPosition = function(x,y) {
 		'left': this.x+'px'
 	});
 };
-

@@ -4,7 +4,7 @@ $(document).ready(function(){
 							30,
 							400,
 							'button',
-							cb
+							function(){alert('hello');}
 						);
 						
 	var cb = function(x){
@@ -12,5 +12,5 @@ $(document).ready(function(){
 			'background-color' : 'rgb(255,0,'+Math.round(x*250)+')'}
       	);
 	}
-	var slButton = new Slider(0,20,400,'slider',cb);
+	var slButton = new Slider(50,20,100,'slider',cb,'body');
 });

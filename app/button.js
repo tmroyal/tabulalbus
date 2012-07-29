@@ -1,6 +1,7 @@
 function Button(x,y,id,onclick){
 	UIInput.call(this,x,y,id,onclick)
 	this.init(x,y);
+	
 };
 
 Button.prototype = subclassOf(UIInput);
@@ -12,5 +13,6 @@ Button.prototype.init = function(x,y){
 	}).appendTo('body');
 	
 	this.setPosition(x,y);
-	$('#'+this.id).bind('click',this,this.click_handler);
+	$('#'+this.id).click(this.onclick);
 };
+

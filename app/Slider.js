@@ -1,8 +1,10 @@
+var OFFSET = 10;
+
 function HSliderButton(x,y,range,id,callback){
 	UIInput.call(this,x,y,id,{});
 	this.init(x,y);
 	this.x1 = x;
-	this.x2 = x+range-12;
+	this.x2 = x+range-OFFSET;
 	this.range = range;
 	// callback sould take a range of zero to one (float)
 	this.callback = callback || {};
@@ -24,7 +26,7 @@ HSliderButton.prototype.init = function(x,y) {
 HSliderButton.prototype.mouseMove = function(e){
 	// note, jquery rewrites 'this'
 	var sbutton = e.data,
-		new_x = e.pageX-12;
+		new_x = e.pageX-OFFSET;
 
 	if(new_x > sbutton.x1 && new_x < sbutton.x2){
 		sbutton.setPosition(new_x,sbutton.y);
@@ -55,10 +57,10 @@ HSliderButton.prototype.mouseDown = function(e) {
 // ------------------------------------
 
 function Slider(x,y,range,id,callback){
-	this.button = new HSliderButton(x,y,range,id+'btn',callback);
-	var ypos = y+12,
-		xpos = x+12,
-		width = range-12;
+
+	var ypos = y+OFFSET,
+		xpos = x+OFFSET,
+		width = range-OFFSET;
 	
 	$('<div/>',{
 		'class': 'slider_bar',
@@ -69,5 +71,9 @@ function Slider(x,y,range,id,callback){
 		'top': ypos+'px',
 		'left': x+'px'
 	});
+	
+
+	this.button = new HSliderButton(x,y,range,id+'btn',callback);
+
 
 };
