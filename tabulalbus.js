@@ -3,6 +3,46 @@ function subclassOf(base) {
     return new _subclassOf();
 }
 function _subclassOf() {};
+function Color(h,s,v){	
+	this.h = h;
+	this.s = s;
+	this.v = v;
+	this.color = this.HSVtoRGB(this.h,this.s,this.v);
+	alert(this.color);
+}
+
+Color.prototype.setH = function(h) {
+	this.h = h;
+};
+Color.prototype.setS = function(s) {
+	this.s = s;
+};	
+Color.prototype.setV = function(v) {
+	this.v = v;
+};
+
+Color.prototype.HSVtoRGB = function(h, s, v){
+    // courtesy http://mjijackson.com/
+	var r, g, b;
+
+    var i = Math.floor(h * 6);
+    var f = h * 6 - i;
+    var p = v * (1 - s);
+    var q = v * (1 - f * s);
+    var t = v * (1 - (1 - f) * s);
+
+    switch(i % 6){
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+
+    return [r * 255, g * 255, b * 255];
+}
+
 function UIInput(x,y,id,onclick){
 	UIElement.call(this,x,y,id);
 	this.onclick = onclick || {};
@@ -148,26 +188,37 @@ function Slider(x,y,range,id,callback){
 function ColorPicker(x,y,id){
 	UIElement.call(this,x,y,id);
 
-	var ysep = 15,
+	var ysep = 35,
 		ibump = 3,
 		xoff = 18,
-		range = 100;
+		range = 150,
+		indicator_size = ysep*2,
+		indicator_left = x+range+xoff+10;
 
 	this.hueslider = Slider(x+xoff,y,range,this.id+'hue');
-	this.satslider = Slider(x+xoff,y+xoff,range,this.id+'sat');
-	this.valslider = Slider(x+xoff,y+xoff*2,range,this.id+'val');
+	this.satslider = Slider(x+xoff,y+ysep,range,this.id+'sat');
+	this.valslider = Slider(x+xoff,y+ysep*2,range,this.id+'val');
 	
 	this.addImage(x,y+ibump,'./img/h.png');
-	this.addImage(x,y+ibump+xoff,'./img/s.png');
-	this.addImage(x,y+ibump+xoff*2,'./img/v.png');
-
-}
+	this.addImage(x,y+ibump+ysep,'./img/s.png');
+	this.addImage(x,y+ibump+ysep*2,'./img/v.png');
+	
+	$('<div/>',{
+		'class': 'bordered',
+		'id': this.id
+	}).appendTo('body')
+      .css({
+		'width': indicator_size,
+		'height': indicator_size,
+		'top': y+3,
+		'left': indicator_left
+	});
+};
 
 ColorPicker.prototype = subclassOf(UIElement);
 
-ColorPicker.prototype.init = function() {
-};
 
 $(document).ready(function(){
-	var cp = new ColorPicker(20,20,'cp')
+	var cp = new ColorPicker(20,20,'cp');
+	var clr = new Color(0,1,1);
 });
