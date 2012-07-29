@@ -2,7 +2,7 @@ var Button = function(x,y,id,onclick){
 	this.id = id;
 	this.onclick = onclick || {};
 
-	init : function(x,y){
+	this.init = function(x,y){
 		$('<div/>',{
 			'class': 'button bordered',
 			'id': this.id
@@ -38,13 +38,3 @@ var Button = function(x,y,id,onclick){
 	this.init(x,y);
 };
 
-
-$(document).ready(function(){
-	var cb = function(){alert('hello');};
-	var button = new Button(
-							30,
-							400,
-							'button',
-							function(){alert('hello')}
-						);
-});
