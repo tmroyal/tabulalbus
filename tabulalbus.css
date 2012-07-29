@@ -1,3 +1,11 @@
+img {
+  position: absolute;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 
 div.slider_button{	
 	position: absolute;

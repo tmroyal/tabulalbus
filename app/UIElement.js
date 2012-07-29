@@ -12,3 +12,14 @@ UIElement.prototype.setPosition = function(x,y) {
 		'left': this.x+'px'
 	});
 };
+
+UIElement.prototype.addImage = function(x,y,uri) {
+	$('<img/>',{
+		'src':uri
+	}).appendTo('body').css(
+	{
+		'top':y+'px',
+		'left':x+'px'
+	}
+	);
+};

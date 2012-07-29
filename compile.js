@@ -10,6 +10,7 @@ new compressor.minify({
 				,'./app/UIElement.js'
 				,'./app/Button.js'
 				,'./app/Slider.js'
+				,'./app/ColorPicker.js'
 				,'./app/app.js'
 			],
     fileOut: 'tabulalbus.js',

@@ -1,10 +1,10 @@
-var OFFSET = 10;
+var OFFSET = 6;
 
 function HSliderButton(x,y,range,id,callback){
 	UIInput.call(this,x,y,id,{});
 	this.init(x,y);
 	this.x1 = x;
-	this.x2 = x+range-OFFSET;
+	this.x2 = x+range-20;
 	this.range = range;
 	// callback sould take a range of zero to one (float)
 	this.callback = callback || {};
@@ -14,7 +14,7 @@ HSliderButton.prototype = subclassOf(UIInput);
 
 HSliderButton.prototype.init = function(x,y) {
 	$('<div/>',{
-		'class': 'button bordered',
+		'class': 'slider_button bordered',
 		'id': this.id
 	}).appendTo('body');
 	
@@ -58,6 +58,7 @@ HSliderButton.prototype.mouseDown = function(e) {
 
 function Slider(x,y,range,id,callback){
 
+
 	var ypos = y+OFFSET,
 		xpos = x+OFFSET,
 		width = range-OFFSET;
@@ -72,8 +73,8 @@ function Slider(x,y,range,id,callback){
 		'left': x+'px'
 	});
 	
-
-	this.button = new HSliderButton(x,y,range,id+'btn',callback);
+	
+	this.button = new HSliderButton(x,y,range,id+'btn',callback || function(){});
 
 
 };
