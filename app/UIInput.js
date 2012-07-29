@@ -1,6 +1,6 @@
 function UIInput(x,y,id,onclick){
 	UIElement.call(this,x,y,id);
-	this.onclick = onclick;
+	this.onclick = onclick || {};
 };
 
 UIInput.prototype = subclassOf(UIElement);

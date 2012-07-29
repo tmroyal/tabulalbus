@@ -6,4 +6,5 @@ $(document).ready(function(){
 							'button',
 							function(){alert('hello')}
 						);
+	var slButton = new HSliderButton(20,20,'slider_button');
 });
