@@ -77,7 +77,7 @@ HSliderButton.prototype.init = function(x,y) {
 	// object must be passed because jQuery does not support 
 	// using the this keyword for objects. this in the context of
 	// events reffers to the parent element
-	$('#'+this.id).bind('mousedown',this,this.mouseDown)	
+	$('#'+this.id).bind('mousedown',this,this.mouseDown);
 };
 
 HSliderButton.prototype.mouseMove = function(e){
@@ -87,26 +87,30 @@ HSliderButton.prototype.mouseMove = function(e){
 	if(new_x > sbutton.x1 && new_x < sbutton.x2){
 		sbutton.setPosition(new_x,sbutton.y);
 		sbutton.callback((sbutton.x-sbutton.x1)/sbutton.range);
-	} else if(new_x< sbutton.x1){
+	} else if(new_x < sbutton.x1){
 		sbutton.setPosition(sbutton.x1,sbutton.y);
 		sbutton.callback(0);
-	} else if(new_x> sbutton.x2){
+	} else if(new_x > sbutton.x2){
 		sbutton.setPosition(sbutton.x2,sbutton.y);
 		sbutton.callback(1);
 	}
 };
 
-
 HSliderButton.prototype.mouseUp = function(e){
+	var sbutton = e.data;
+
 	$(document).unbind('mouseup');
-	$(document).unbind('mousemove');	
+	$(document).unbind('mousemove');
+
+	sbutton.setPosition(e.pageX,sbutton.y);
+	sbutton.callback((sbutton.x-sbutton.x1)/sbutton.range);	
 };
 
 
 HSliderButton.prototype.mouseDown = function(e) {
-	var sliderbutton = e.data;
-	$(document).bind('mousemove',sliderbutton,sliderbutton.mouseMove);
-	$(document).bind('mouseup',sliderbutton,sliderbutton.mouseUp);
+	var sbutton = e.data;
+	$(document).bind('mousemove',sbutton,sbutton.mouseMove);
+	$(document).bind('mouseup',sbutton,sbutton.mouseUp);
 };
 
 $(document).ready(function(){
@@ -117,5 +121,12 @@ $(document).ready(function(){
 							'button',
 							function(){alert('hello')}
 						);
-	var slButton = new HSliderButton(100,20,100,'slider_button',function(x){console.log(x)});
+						
+	var cb = function(x){
+		$('#slider_button').css({
+			'background-color' : 'rgb(255,0,'+Math.round(x*250)+')'}
+      	);
+		console.log(x*250);
+	}
+	var slButton = new HSliderButton(0,20,400,'slider_button',cb);
 });

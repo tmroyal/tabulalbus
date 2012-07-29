@@ -6,5 +6,12 @@ $(document).ready(function(){
 							'button',
 							function(){alert('hello')}
 						);
-	var slButton = new HSliderButton(100,20,100,'slider_button',function(x){console.log(x)});
+						
+	var cb = function(x){
+		$('#slider_button').css({
+			'background-color' : 'rgb(255,0,'+Math.round(x*250)+')'}
+      	);
+		console.log(x*250);
+	}
+	var slButton = new HSliderButton(0,20,400,'slider_button',cb);
 });
