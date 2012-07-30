@@ -3,27 +3,71 @@ function subclassOf(base) {
     return new _subclassOf();
 }
 function _subclassOf() {};
-function Color(h,s,v){	
+function BrushViewer(x,y,id){
+	UIElement.call(this,x,y,id);
+	this.init(x,y);
+	
+};
+
+BrushViewer.prototype = subclassOf(UIElement);
+
+BrushViewer.prototype.init = function(x,y) {
+	$('<div/>', {
+		'id': this.id
+	})
+	.appendTo('body')
+	.css({
+		'class' : 'bordered',
+		'width' : '50px',
+		'height': '50px'
+	})
+	
+	this.setPosition(x,y);
+};
+
+
+BrushViewer.prototype.updateColor = function(color) {
+	$('#'+this.id).css({
+		'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
+	});
+};
+
+
+function Color(h,s,v){
+	
 	this.h = h;
 	this.s = s;
 	this.v = v;
 	this.color = this.HSVtoRGB(this.h,this.s,this.v);
-	alert(this.color);
-}
+	this.callbacks = [];	
 
-Color.prototype.setH = function(h) {
-	this.h = h;
-};
+	this.setH = function(h) {
+		this.h = h;
+		this.update_color();
+	};
+}
 Color.prototype.setS = function(s) {
 	this.s = s;
+	this.update_color();
 };	
 Color.prototype.setV = function(v) {
-	this.v = v;
+	console.log(this);
+	v = v;
+	Color.update_color();
 };
+
+
+Color.prototype.update_color = function() {
+	this.color = this.HSVtoRGB(this.h,this.s,this.v);
+	for (i in this.callbacks){
+		this.callbacks[i](this.color);
+	}
+};
+
 
 Color.prototype.HSVtoRGB = function(h, s, v){
     // courtesy http://mjijackson.com/
-	var r, g, b;
+	var r1, g1, b1;
 
     var i = Math.floor(h * 6);
     var f = h * 6 - i;
@@ -32,16 +76,19 @@ Color.prototype.HSVtoRGB = function(h, s, v){
     var t = v * (1 - (1 - f) * s);
 
     switch(i % 6){
-        case 0: r = v, g = t, b = p; break;
-        case 1: r = q, g = v, b = p; break;
-        case 2: r = p, g = v, b = t; break;
-        case 3: r = p, g = q, b = v; break;
-        case 4: r = t, g = p, b = v; break;
-        case 5: r = v, g = p, b = q; break;
+        case 0: r1 = v, g1 = t, b1 = p; break;
+        case 1: r1 = q, g1 = v, b1 = p; break;
+        case 2: r1 = p, g1 = v, b1 = t; break;
+        case 3: r1 = p, g1 = q, b1 = v; break;
+        case 4: r1 = t, g1 = p, b1 = v; break;
+        case 5: r1 = v, g1 = p, b1 = q; break;
     }
-
-    return [r * 255, g * 255, b * 255];
+    return {r:r1 * 255, g:g1 * 255, b:b1 * 255};
 }
+
+Color.prototype.add_callback = function(callback) {
+	this.callbacks.push(callback);
+};
 
 function UIInput(x,y,id,onclick){
 	UIElement.call(this,x,y,id);
@@ -77,12 +124,10 @@ UIElement.prototype.setPosition = function(x,y) {
 UIElement.prototype.addImage = function(x,y,uri) {
 	$('<img/>',{
 		'src':uri
-	}).appendTo('body').css(
-	{
+	}).appendTo('body').css({
 		'top':y+'px',
 		'left':x+'px'
-	}
-	);
+	});
 };
 
 function Button(x,y,id,onclick){
@@ -171,7 +216,7 @@ function Slider(x,y,range,id,callback){
 	
 	$('<div/>',{
 		'class': 'slider_bar',
-		'id': this.id,
+		'id': this.id
 	}).appendTo('body')
 	  .css({
 		'width': range+'px',
@@ -185,9 +230,11 @@ function Slider(x,y,range,id,callback){
 
 };
 
-function ColorPicker(x,y,id){
+function ColorPicker(x,y,id,color){
 	UIElement.call(this,x,y,id);
 
+	this.color = color;
+	
 	var ysep = 35,
 		ibump = 3,
 		xoff = 18,
@@ -195,30 +242,27 @@ function ColorPicker(x,y,id){
 		indicator_size = ysep*2,
 		indicator_left = x+range+xoff+10;
 
-	this.hueslider = Slider(x+xoff,y,range,this.id+'hue');
-	this.satslider = Slider(x+xoff,y+ysep,range,this.id+'sat');
-	this.valslider = Slider(x+xoff,y+ysep*2,range,this.id+'val');
+	this.hueslider = Slider(x+xoff,y,range,this.id+'hue',this.color.setH);
+	this.satslider = Slider(x+xoff,y+ysep,range,this.id+'sat',this.color.setS);
+	this.valslider = Slider(x+xoff,y+ysep*2,range,this.id+'val',this.color.setV);
 	
 	this.addImage(x,y+ibump,'./img/h.png');
 	this.addImage(x,y+ibump+ysep,'./img/s.png');
 	this.addImage(x,y+ibump+ysep*2,'./img/v.png');
-	
-	$('<div/>',{
-		'class': 'bordered',
-		'id': this.id
-	}).appendTo('body')
-      .css({
-		'width': indicator_size,
-		'height': indicator_size,
-		'top': y+3,
-		'left': indicator_left
-	});
+
 };
 
 ColorPicker.prototype = subclassOf(UIElement);
 
 
+
 $(document).ready(function(){
-	var cp = new ColorPicker(20,20,'cp');
-	var clr = new Color(0,1,1);
+
+	var clr = new Color(0,1,1,'color');
+
+	var cp = new ColorPicker(20,20,'cp',clr);
+	var	brush_viewer = new BrushViewer(400,400,'bview');
+	
+	clr.add_callback(brush_viewer.update_color);
+	
 });

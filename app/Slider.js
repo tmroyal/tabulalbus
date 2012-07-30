@@ -65,7 +65,7 @@ function Slider(x,y,range,id,callback){
 	
 	$('<div/>',{
 		'class': 'slider_bar',
-		'id': this.id,
+		'id': this.id
 	}).appendTo('body')
 	  .css({
 		'width': range+'px',

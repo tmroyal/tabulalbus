@@ -16,10 +16,8 @@ UIElement.prototype.setPosition = function(x,y) {
 UIElement.prototype.addImage = function(x,y,uri) {
 	$('<img/>',{
 		'src':uri
-	}).appendTo('body').css(
-	{
+	}).appendTo('body').css({
 		'top':y+'px',
 		'left':x+'px'
-	}
-	);
+	});
 };

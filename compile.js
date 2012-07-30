@@ -6,6 +6,7 @@ new compressor.minify({
     type: 'no-compress',
     fileIn: [
 				'./sugar/subclassOf.js'
+				,'./app/BrushViewer.js'
 				,'./app/Color.js'
 				,'./app/UIInput.js'
 				,'./app/UIElement.js'
