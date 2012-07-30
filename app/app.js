@@ -4,7 +4,7 @@ $(document).ready(function(){
 
 	var cp = new ColorPicker(20,20,'cp',clr);
 	var	brush_viewer = new BrushViewer(400,400,'bview');
-	
-	clr.add_callback(brush_viewer.update_color);
+	brush_viewer.updateColor({r:230,g:100,b:120});
+	clr.add_callback(brush_viewer.updateColor);
 	
 });

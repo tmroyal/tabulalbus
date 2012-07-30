@@ -1,16 +1,18 @@
+UIInput.prototype = new UIElement();
+
 function UIInput(x,y,id,onclick){
-	UIElement.call(this,x,y,id);
-	this.onclick = onclick || {};
-};
-
-UIInput.prototype = subclassOf(UIElement);
-
-UIInput.prototype.enable = function(){
-	this.enabled = true;
-	$('#'+this.id).click(this.onclick);
-};
-
-UIInput.prototype.disable = function(){
-	this.enabled = false;
-	$('#'+this.id).unbind('click');
+	var this_ = this;
+	
+	UIElement.call(this_,x,y,id);
+	this_.onclick = onclick || {};
+	
+	this_.enable = function(){
+		this_.enabled = true;
+		$('#'+this_.id).click(this_.onclick);
+	};
+	
+	this_.disable = function(){
+		this_.enabled = false;
+		$('#'+this_.id).unbind('click');
+	};
 };

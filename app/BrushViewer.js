@@ -1,28 +1,29 @@
+BrushViewer.prototype = UIElement();
+
 function BrushViewer(x,y,id){
-	UIElement.call(this,x,y,id);
-	this.init(x,y);
+	var this_=this;
+	UIElement.call(this_,x,y,id);
+
+	this_.init = function(x,y) {
+		$('<div/>', {
+			'id': this_.id
+		})
+		.appendTo('body')
+		.css({
+			'class' : 'bordered',
+			'width' : '50px',
+			'height': '50px'
+		})
 	
-};
+		this_.setPosition(x,y);
+	};
 
-BrushViewer.prototype = subclassOf(UIElement);
 
-BrushViewer.prototype.init = function(x,y) {
-	$('<div/>', {
-		'id': this.id
-	})
-	.appendTo('body')
-	.css({
-		'class' : 'bordered',
-		'width' : '50px',
-		'height': '50px'
-	})
+	this_.updateColor = function(color) {
+		$('#'+this_.id).css({
+			'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
+		});
+	};
 	
-	this.setPosition(x,y);
-};
-
-
-BrushViewer.prototype.updateColor = function(color) {
-	$('#'+this.id).css({
-		'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
-	});
+	this_.init(x,y);
 };

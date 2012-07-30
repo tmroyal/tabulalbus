@@ -1,67 +1,70 @@
 var OFFSET = 6;
 
+HSliderButton.prototype = UIInput();
+
 function HSliderButton(x,y,range,id,callback){
-	UIInput.call(this,x,y,id,{});
-	this.init(x,y);
-	this.x1 = x;
-	this.x2 = x+range-20;
-	this.range = range;
-	// callback sould take a range of zero to one (float)
-	this.callback = callback || {};
-}
-
-HSliderButton.prototype = subclassOf(UIInput);
-
-HSliderButton.prototype.init = function(x,y) {
-	$('<div/>',{
-		'class': 'slider_button bordered',
-		'id': this.id
-	}).appendTo('body');
+	var this_=this;
 	
-	this.setPosition(x,y);
-
-	$('#'+this.id).bind('mousedown',this,this.mouseDown);
-};
-
-HSliderButton.prototype.mouseMove = function(e){
-	// note, jquery rewrites 'this'
-	var sbutton = e.data,
-		new_x = e.pageX-OFFSET;
-
-	if(new_x > sbutton.x1 && new_x < sbutton.x2){
-		sbutton.setPosition(new_x,sbutton.y);
-		sbutton.callback((sbutton.x-sbutton.x1)/sbutton.range);
-	} else if(new_x < sbutton.x1){
-		sbutton.setPosition(sbutton.x1,sbutton.y);
-		sbutton.callback(0);
-	} else if(new_x > sbutton.x2){
-		sbutton.setPosition(sbutton.x2,sbutton.y);
-		sbutton.callback(1);
-	}
-};
-
-HSliderButton.prototype.mouseUp = function(e){
-	// note, jquery rewrites 'this'
-	$(document).unbind('mouseup');
-	$(document).unbind('mousemove');
-};
+	UIInput.call(this_,x,y,id,{});
+	this_.x1 = x;
+	this_.x2 = x+range-20;
+	this_.range = range;
+	// callback sould take a range of zero to one (float)
+	this_.callback = callback || {};
 
 
-HSliderButton.prototype.mouseDown = function(e) {
-	// note, jquery rewrites 'this'
-	var sbutton = e.data;
-	$(document).bind('mousemove',sbutton,sbutton.mouseMove);
-	$(document).bind('mouseup',sbutton,sbutton.mouseUp);
+
+	this_.init = function(x,y) {
+		$('<div/>',{
+			'class': 'slider_button bordered',
+			'id': this_.id
+		}).appendTo('body');
+	
+		this_.setPosition(x,y);
+
+		$('#'+this_.id).bind('mousedown',this_.mouseDown);
+	};
+
+	this_.mouseMove = function(e){
+		// note, jquery rewrites 'this'
+		var new_x = e.pageX-OFFSET;
+
+		if(new_x > this_.x1 && new_x < this_.x2){
+			this_.setPosition(new_x,this_.y);
+			this_.callback((this_.x-this_.x1)/this_.range);
+		} else if(new_x < this_.x1){
+			this_.setPosition(this_.x1,this_.y);
+			this_.callback(0);
+		} else if(new_x > this_.x2){
+			this_.setPosition(this_.x2,this_.y);
+			this_.callback(1);
+		}
+	};
+
+	this_.mouseUp = function(e){
+		$(document).unbind('mouseup');
+		$(document).unbind('mousemove');
+	};
+
+
+	this_.mouseDown = function(e) {
+		$(document).bind('mousemove',this_.mouseMove);
+		$(document).bind('mouseup',this_.mouseUp);
+	};
+	
+	this_.init(x,y);
+	
 };
 
 // ------------------------------------
 
 function Slider(x,y,range,id,callback){
-
-
+	var this_ = this;
+	
 	var ypos = y+OFFSET,
 		xpos = x+OFFSET,
 		width = range-OFFSET;
+
 	
 	$('<div/>',{
 		'class': 'slider_bar',
@@ -73,8 +76,5 @@ function Slider(x,y,range,id,callback){
 		'left': x+'px'
 	});
 	
-	
-	this.button = new HSliderButton(x,y,range,id+'btn',callback || function(){});
-
-
+	this_.button = new HSliderButton(x,y,range,id+'btn',callback || function(){});
 };
