@@ -5,25 +5,49 @@ function BrushViewer(x,y,id){
 	UIElement.call(this_,x,y,id);
 
 	this_.init = function(x,y) {
-		$('<div/>', {
-			'id': this_.id
+		$('<canvas/>', {
+			'id': this_.id,
+
 		})
 		.appendTo('body')
-		.css({
-			'class' : 'bordered',
-			'width' : '50px',
-			'height': '50px'
-		})
+		$('#' + this_.id).attr('height', 100).attr('width', 100);
+		$('#' + this_.id).css({'border-style':'solid',
+		'border-color': '#6e6e6e',
+		'border-width': '2px',
+		'border-radius': '10px'});
 	
 		this_.setPosition(x,y);
 	};
+	this_.init(x,y);
 
 
 	this_.updateColor = function(color) {
-		$('#'+this_.id).css({
-			'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
-		});
+		// $('#'+this_.id).css({
+		// 			'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
+		// 		});
 	};
 	
-	this_.init(x,y);
+	// to do this, we will get the white image
+	// and then do the imgproc stuff from play my code
+	// and then use the brush viewer canvas to store the image(?)
+	
+
+	this_.canvas = document.getElementById(this_.id).getContext('2d');
+	var img = new Image();
+	
+	img.onload=function(){
+
+	    this_.canvas.drawImage( img, 0, 0 );
+		Caman("#"+id, function () {
+		    this.colorize(255,0,0,255).render();
+		});
+		
+
+	};
+	
+
+	img.src='./img/markerw.png';
+	
+	//this_.canvas.fillRect(0,0,100,100);
+
 };

@@ -6,9 +6,10 @@ img {
   user-select: none;
 }
 
-div{
+div, canvas{
 	position:absolute;
 }
+
 
 div.slider_button{	
 	position: absolute;	

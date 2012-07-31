@@ -23,11 +23,9 @@ function Color(h,s,v){
 
 	this_.update_color = function() {
 		this_.color = this_.HSVtoRGB(this_.h,this_.s,this_.v);
-		console.log(this_.color);
 		for (i in this_.callbacks){
-
-					this_.callbacks[i](this_.color);
-				}
+			this_.callbacks[i](this_.color);
+		}
 	};
 
 	this_.HSVtoRGB = function(h, s, v){
