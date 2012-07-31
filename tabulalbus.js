@@ -278,7 +278,7 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 
 // ------------------------------------
 
-function Slider(x,y,range,id,dcallback,ucallback,init){
+function Slider(x,y,range,id,dcallback,ucallback){
 	var this_ = this;
 	
 	var ypos = y+OFFSET,
@@ -299,7 +299,9 @@ function Slider(x,y,range,id,dcallback,ucallback,init){
 	this_.button = new HSliderButton(x,y,range,id+'btn',dcallback,ucallback);
 	
 
-	this_.button.set(init);
+	this_.set=function(pos){
+		this_.button.set(pos);
+	};
 
 };
 
@@ -319,9 +321,9 @@ function ColorPicker(x,y,id,color){
 		indicator_left = x+range+xoff+10;
 
 
-	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH,this_.color.broadcast,0);
-	this_.satslider = Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS,this_.color.broadcast,1);
-	this_.valslider = Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV,this_.color.broadcast,1);
+	this_.hueslider = new Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH,this_.color.broadcast,0);
+	this_.satslider = new Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS,this_.color.broadcast,1);
+	this_.valslider = new Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV,this_.color.broadcast,1);
 	
 	this_.addImage(x,y+ibump,'./img/h.png');
 	this_.addImage(x,y+ibump+ysep,'./img/s.png');
@@ -343,13 +345,20 @@ function ColorPicker(x,y,id,color){
 		'width':'20',
 		'height':'20'
 	});
+	
+	this_.set_pos=function(h,s,v){
+		console.log(this_);
+		this_.hueslider.set(h);
+		this_.satslider.set(s);
+		this_.valslider.set(v);
+	}
 };
 
 
 
 
 $(document).ready(function(){
-	var clr = new Color(0,1,1,'color');
+	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(20,20,'cp',clr);
 	var	brush_viewer = new BrushViewer(200,10,'bview');
 	
@@ -358,6 +367,5 @@ $(document).ready(function(){
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
 	clr.add_broadcastee(brush_viewer.updateColor);
-	cp.setIndicator(clr.color);
-	brush_viewer.updateColor(clr.color);
+	cp.set_pos(0,1,1);
 });
