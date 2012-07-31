@@ -5,7 +5,8 @@ function Color(h,s,v){
 	this_.h = h;
 	this_.s = s;
 	this_.v = v;
-	this_.callbacks = [];	
+	this_.callbacks = [];
+	this_.broadcastees = [];	
 
 	this_.setH = function(h) {
 		this_.h = h;
@@ -28,8 +29,10 @@ function Color(h,s,v){
 		}
 	};
 	
-	this_.apply_color = function(cb){
-		cb(this_.color);
+	this_.broadcast = function(cb){
+		for (i in this_.broadcastees){
+			this_.broadcastees[i](this_.color);
+		}
 	}
 
 	this_.HSVtoRGB = function(h, s, v){
@@ -59,6 +62,9 @@ function Color(h,s,v){
 
 	this_.add_callback = function(callback) {
 		this_.callbacks.push(callback);
+	};
+	this_.add_broadcastee = function(broadcastee) {
+		this_.broadcastees.push(broadcastee);
 	};
 	
 	this_.color = this_.HSVtoRGB(this.h,this.s,this.v);

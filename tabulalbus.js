@@ -66,7 +66,8 @@ function Color(h,s,v){
 	this_.h = h;
 	this_.s = s;
 	this_.v = v;
-	this_.callbacks = [];	
+	this_.callbacks = [];
+	this_.broadcastees = [];	
 
 	this_.setH = function(h) {
 		this_.h = h;
@@ -89,8 +90,10 @@ function Color(h,s,v){
 		}
 	};
 	
-	this_.apply_color = function(cb){
-		cb(this_.color);
+	this_.broadcast = function(cb){
+		for (i in this_.broadcastees){
+			this_.broadcastees[i](this_.color);
+		}
 	}
 
 	this_.HSVtoRGB = function(h, s, v){
@@ -120,6 +123,9 @@ function Color(h,s,v){
 
 	this_.add_callback = function(callback) {
 		this_.callbacks.push(callback);
+	};
+	this_.add_broadcastee = function(broadcastee) {
+		this_.broadcastees.push(broadcastee);
 	};
 	
 	this_.color = this_.HSVtoRGB(this.h,this.s,this.v);
@@ -201,9 +207,7 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 	this_.range = range;
 	// callback sould take a range of zero to one (float)
 	this_.down_callback = down_callback || function(){};
-	console.log(up_callback);
 	this_.up_callback = up_callback || function(){};
-	console.log(this_.up_callback);
 
 
 	this_.init = function(x,y) {
@@ -298,9 +302,9 @@ function ColorPicker(x,y,id,color){
 		indicator_left = x+range+xoff+10;
 
 
-	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH, function(){alert('hello')});
-	this_.satslider = Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS);
-	this_.valslider = Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV);
+	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH,this_.color.broadcast);
+	this_.satslider = Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS,this_.color.broadcast);
+	this_.valslider = Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV,this_.color.broadcast);
 	
 	this_.addImage(x,y+ibump,'./img/h.png');
 	this_.addImage(x,y+ibump+ysep,'./img/s.png');
@@ -338,4 +342,5 @@ $(document).ready(function(){
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
+	clr.add_broadcastee(brush_viewer.updateColor);
 });

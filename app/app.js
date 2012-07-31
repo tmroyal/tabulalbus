@@ -7,4 +7,5 @@ $(document).ready(function(){
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
+	clr.add_broadcastee(brush_viewer.updateColor);
 });

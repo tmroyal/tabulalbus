@@ -11,9 +11,7 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 	this_.range = range;
 	// callback sould take a range of zero to one (float)
 	this_.down_callback = down_callback || function(){};
-	console.log(up_callback);
 	this_.up_callback = up_callback || function(){};
-	console.log(this_.up_callback);
 
 
 	this_.init = function(x,y) {
