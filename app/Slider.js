@@ -68,9 +68,10 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 	this_.set = function(v){
 		if (v>1){v=1;}
 		if (v<0){v=0;}
-		this_.x = this_range*v+this_.x1;
+		this_.x = (this_.x2-this_.x1)*v+this_.x1;
 		this_.down_callback(v);
 		this_.up_callback(v);
+		this_.setPosition(this_.x,this_.y);
 	};
 	
 	this_.init(x,y);
@@ -79,7 +80,7 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 
 // ------------------------------------
 
-function Slider(x,y,range,id,dcallback,ucallback){
+function Slider(x,y,range,id,dcallback,ucallback,init){
 	var this_ = this;
 	
 	var ypos = y+OFFSET,
@@ -99,7 +100,7 @@ function Slider(x,y,range,id,dcallback,ucallback){
 	
 	this_.button = new HSliderButton(x,y,range,id+'btn',dcallback,ucallback);
 	
-	this_.set = function(v){
-		this_.button.set(v);
-	}
+
+	this_.button.set(init);
+
 };

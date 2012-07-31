@@ -44,7 +44,9 @@ function BrushViewer(x,y,id){
 	img.onload=function(){
 
 	    this_.canvas.drawImage( img, 0, 0 );
-
+		Caman("#"+id, function () {
+		    this.colorize(255,0,0,100).render();
+		});
 	};
 	
 

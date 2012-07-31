@@ -8,4 +8,6 @@ $(document).ready(function(){
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
 	clr.add_broadcastee(brush_viewer.updateColor);
+	cp.setIndicator(clr.color);
+	brush_viewer.updateColor(clr.color);
 });

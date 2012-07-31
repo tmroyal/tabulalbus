@@ -49,7 +49,9 @@ function BrushViewer(x,y,id){
 	img.onload=function(){
 
 	    this_.canvas.drawImage( img, 0, 0 );
-
+		Caman("#"+id, function () {
+		    this.colorize(255,0,0,100).render();
+		});
 	};
 	
 
@@ -261,13 +263,22 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 		$(document).bind('mouseup',this_.mouseUp);
 	};
 	
+	this_.set = function(v){
+		if (v>1){v=1;}
+		if (v<0){v=0;}
+		this_.x = (this_.x2-this_.x1)*v+this_.x1;
+		this_.down_callback(v);
+		this_.up_callback(v);
+		this_.setPosition(this_.x,this_.y);
+	};
+	
 	this_.init(x,y);
 	
 };
 
 // ------------------------------------
 
-function Slider(x,y,range,id,dcallback,ucallback){
+function Slider(x,y,range,id,dcallback,ucallback,init){
 	var this_ = this;
 	
 	var ypos = y+OFFSET,
@@ -286,7 +297,13 @@ function Slider(x,y,range,id,dcallback,ucallback){
 	});
 	
 	this_.button = new HSliderButton(x,y,range,id+'btn',dcallback,ucallback);
+	
+
+	this_.button.set(init);
+
 };
+
+ColorPicker.prototype = new UIElement();
 
 function ColorPicker(x,y,id,color){
 	var this_ = this;
@@ -302,9 +319,9 @@ function ColorPicker(x,y,id,color){
 		indicator_left = x+range+xoff+10;
 
 
-	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH,this_.color.broadcast);
-	this_.satslider = Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS,this_.color.broadcast);
-	this_.valslider = Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV,this_.color.broadcast);
+	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH,this_.color.broadcast,0);
+	this_.satslider = Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS,this_.color.broadcast,1);
+	this_.valslider = Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV,this_.color.broadcast,1);
 	
 	this_.addImage(x,y+ibump,'./img/h.png');
 	this_.addImage(x,y+ibump+ysep,'./img/s.png');
@@ -326,10 +343,8 @@ function ColorPicker(x,y,id,color){
 		'width':'20',
 		'height':'20'
 	});
-
 };
 
-ColorPicker.prototype = new UIElement();
 
 
 
@@ -343,4 +358,6 @@ $(document).ready(function(){
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
 	clr.add_broadcastee(brush_viewer.updateColor);
+	cp.setIndicator(clr.color);
+	brush_viewer.updateColor(clr.color);
 });
