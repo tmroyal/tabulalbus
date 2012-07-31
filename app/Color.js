@@ -27,6 +27,10 @@ function Color(h,s,v){
 			this_.callbacks[i](this_.color);
 		}
 	};
+	
+	this_.apply_color = function(cb){
+		cb(this_.color);
+	}
 
 	this_.HSVtoRGB = function(h, s, v){
 	    // courtesy http://mjijackson.com/

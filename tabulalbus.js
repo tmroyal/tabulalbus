@@ -30,6 +30,12 @@ function BrushViewer(x,y,id){
 		// $('#'+this_.id).css({
 		// 			'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
 		// 		});
+		this_.canvas.clearRect(0,0,100,100);
+		this_.canvas.drawImage( img, 0, 0 );
+	    
+		Caman("#"+id, function () {
+		    this.colorize(color.r,color.g,color.b,100).render();
+		});
 	};
 	
 	// to do this, we will get the white image
@@ -43,10 +49,6 @@ function BrushViewer(x,y,id){
 	img.onload=function(){
 
 	    this_.canvas.drawImage( img, 0, 0 );
-		Caman("#"+id, function () {
-		    this.colorize(255,0,0,255).render();
-		});
-		
 
 	};
 	
@@ -86,6 +88,10 @@ function Color(h,s,v){
 			this_.callbacks[i](this_.color);
 		}
 	};
+	
+	this_.apply_color = function(cb){
+		cb(this_.color);
+	}
 
 	this_.HSVtoRGB = function(h, s, v){
 	    // courtesy http://mjijackson.com/
@@ -186,7 +192,7 @@ var OFFSET = 6;
 
 HSliderButton.prototype = UIInput();
 
-function HSliderButton(x,y,range,id,callback){
+function HSliderButton(x,y,range,id,down_callback,up_callback){
 	var this_=this;
 	
 	UIInput.call(this_,x,y,id,{});
@@ -194,8 +200,10 @@ function HSliderButton(x,y,range,id,callback){
 	this_.x2 = x+range-20;
 	this_.range = range;
 	// callback sould take a range of zero to one (float)
-	this_.callback = callback || {};
-
+	this_.down_callback = down_callback || function(){};
+	console.log(up_callback);
+	this_.up_callback = up_callback || function(){};
+	console.log(this_.up_callback);
 
 
 	this_.init = function(x,y) {
@@ -215,19 +223,32 @@ function HSliderButton(x,y,range,id,callback){
 
 		if(new_x > this_.x1 && new_x < this_.x2){
 			this_.setPosition(new_x,this_.y);
-			this_.callback((this_.x-this_.x1)/this_.range);
+			this_.down_callback((this_.x-this_.x1)/this_.range);
 		} else if(new_x < this_.x1){
 			this_.setPosition(this_.x1,this_.y);
-			this_.callback(0);
+			this_.down_callback(0);
 		} else if(new_x > this_.x2){
 			this_.setPosition(this_.x2,this_.y);
-			this_.callback(1);
+			this_.down_callback(1);
 		}
 	};
 
 	this_.mouseUp = function(e){
 		$(document).unbind('mouseup');
 		$(document).unbind('mousemove');
+		
+		var new_x = e.pageX-OFFSET;
+		
+		if(new_x > this_.x1 && new_x < this_.x2){
+			this_.setPosition(new_x,this_.y);
+			this_.up_callback((this_.x-this_.x1)/this_.range);
+		} else if(new_x < this_.x1){
+			this_.setPosition(this_.x1,this_.y);
+			this_.up_callback(0);
+		} else if(new_x > this_.x2){
+			this_.setPosition(this_.x2,this_.y);
+			this_.up_callback(1);
+		}
 	};
 
 
@@ -242,7 +263,7 @@ function HSliderButton(x,y,range,id,callback){
 
 // ------------------------------------
 
-function Slider(x,y,range,id,callback){
+function Slider(x,y,range,id,dcallback,ucallback){
 	var this_ = this;
 	
 	var ypos = y+OFFSET,
@@ -260,7 +281,7 @@ function Slider(x,y,range,id,callback){
 		'left': x+'px'
 	});
 	
-	this_.button = new HSliderButton(x,y,range,id+'btn',callback || function(){});
+	this_.button = new HSliderButton(x,y,range,id+'btn',dcallback,ucallback);
 };
 
 function ColorPicker(x,y,id,color){
@@ -276,13 +297,31 @@ function ColorPicker(x,y,id,color){
 		indicator_size = ysep*2,
 		indicator_left = x+range+xoff+10;
 
-	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH);
+
+	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH, function(){alert('hello')});
 	this_.satslider = Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS);
 	this_.valslider = Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV);
 	
 	this_.addImage(x,y+ibump,'./img/h.png');
 	this_.addImage(x,y+ibump+ysep,'./img/s.png');
 	this_.addImage(x,y+ibump+ysep*2,'./img/v.png');
+	
+	this_.setIndicator = function(clr){
+		$("#"+id+"indicator").css({
+			'background-color':'rgb('+clr.r+','+clr.g+','+clr.b+')'
+		})
+	};
+	
+	$('<div/>',{
+		'id':id+'indicator',
+		'class':'bordered'
+	}).appendTo('body')
+	  .css({
+		'top':y+ysep*3,
+		'left':x+xoff,
+		'width':'20',
+		'height':'20'
+	});
 
 };
 
@@ -294,6 +333,9 @@ $(document).ready(function(){
 	var clr = new Color(0,1,1,'color');
 	var cp = new ColorPicker(20,20,'cp',clr);
 	var	brush_viewer = new BrushViewer(200,10,'bview');
-	brush_viewer.updateColor({r:230,g:100,b:120});
-	clr.add_callback(brush_viewer.updateColor);
+	
+	
+	//brush_viewer.updateColor({r:230,g:100,b:120});
+	//clr.add_callback(brush_viewer.updateColor);
+	clr.add_callback(cp.setIndicator);
 });

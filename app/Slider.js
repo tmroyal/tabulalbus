@@ -2,7 +2,7 @@ var OFFSET = 6;
 
 HSliderButton.prototype = UIInput();
 
-function HSliderButton(x,y,range,id,callback){
+function HSliderButton(x,y,range,id,down_callback,up_callback){
 	var this_=this;
 	
 	UIInput.call(this_,x,y,id,{});
@@ -10,8 +10,10 @@ function HSliderButton(x,y,range,id,callback){
 	this_.x2 = x+range-20;
 	this_.range = range;
 	// callback sould take a range of zero to one (float)
-	this_.callback = callback || {};
-
+	this_.down_callback = down_callback || function(){};
+	console.log(up_callback);
+	this_.up_callback = up_callback || function(){};
+	console.log(this_.up_callback);
 
 
 	this_.init = function(x,y) {
@@ -31,19 +33,32 @@ function HSliderButton(x,y,range,id,callback){
 
 		if(new_x > this_.x1 && new_x < this_.x2){
 			this_.setPosition(new_x,this_.y);
-			this_.callback((this_.x-this_.x1)/this_.range);
+			this_.down_callback((this_.x-this_.x1)/this_.range);
 		} else if(new_x < this_.x1){
 			this_.setPosition(this_.x1,this_.y);
-			this_.callback(0);
+			this_.down_callback(0);
 		} else if(new_x > this_.x2){
 			this_.setPosition(this_.x2,this_.y);
-			this_.callback(1);
+			this_.down_callback(1);
 		}
 	};
 
 	this_.mouseUp = function(e){
 		$(document).unbind('mouseup');
 		$(document).unbind('mousemove');
+		
+		var new_x = e.pageX-OFFSET;
+		
+		if(new_x > this_.x1 && new_x < this_.x2){
+			this_.setPosition(new_x,this_.y);
+			this_.up_callback((this_.x-this_.x1)/this_.range);
+		} else if(new_x < this_.x1){
+			this_.setPosition(this_.x1,this_.y);
+			this_.up_callback(0);
+		} else if(new_x > this_.x2){
+			this_.setPosition(this_.x2,this_.y);
+			this_.up_callback(1);
+		}
 	};
 
 
@@ -58,7 +73,7 @@ function HSliderButton(x,y,range,id,callback){
 
 // ------------------------------------
 
-function Slider(x,y,range,id,callback){
+function Slider(x,y,range,id,dcallback,ucallback){
 	var this_ = this;
 	
 	var ypos = y+OFFSET,
@@ -76,5 +91,5 @@ function Slider(x,y,range,id,callback){
 		'left': x+'px'
 	});
 	
-	this_.button = new HSliderButton(x,y,range,id+'btn',callback || function(){});
+	this_.button = new HSliderButton(x,y,range,id+'btn',dcallback,ucallback);
 };

@@ -11,13 +11,31 @@ function ColorPicker(x,y,id,color){
 		indicator_size = ysep*2,
 		indicator_left = x+range+xoff+10;
 
-	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH);
+
+	this_.hueslider = Slider(x+xoff,y,range,this_.id+'hue',this_.color.setH, function(){alert('hello')});
 	this_.satslider = Slider(x+xoff,y+ysep,range,this_.id+'sat',this_.color.setS);
 	this_.valslider = Slider(x+xoff,y+ysep*2,range,this_.id+'val',this_.color.setV);
 	
 	this_.addImage(x,y+ibump,'./img/h.png');
 	this_.addImage(x,y+ibump+ysep,'./img/s.png');
 	this_.addImage(x,y+ibump+ysep*2,'./img/v.png');
+	
+	this_.setIndicator = function(clr){
+		$("#"+id+"indicator").css({
+			'background-color':'rgb('+clr.r+','+clr.g+','+clr.b+')'
+		})
+	};
+	
+	$('<div/>',{
+		'id':id+'indicator',
+		'class':'bordered'
+	}).appendTo('body')
+	  .css({
+		'top':y+ysep*3,
+		'left':x+xoff,
+		'width':'20',
+		'height':'20'
+	});
 
 };
 

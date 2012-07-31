@@ -25,6 +25,12 @@ function BrushViewer(x,y,id){
 		// $('#'+this_.id).css({
 		// 			'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
 		// 		});
+		this_.canvas.clearRect(0,0,100,100);
+		this_.canvas.drawImage( img, 0, 0 );
+	    
+		Caman("#"+id, function () {
+		    this.colorize(color.r,color.g,color.b,100).render();
+		});
 	};
 	
 	// to do this, we will get the white image
@@ -38,10 +44,6 @@ function BrushViewer(x,y,id){
 	img.onload=function(){
 
 	    this_.canvas.drawImage( img, 0, 0 );
-		Caman("#"+id, function () {
-		    this.colorize(255,0,0,255).render();
-		});
-		
 
 	};
 	
