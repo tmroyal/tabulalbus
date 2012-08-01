@@ -3,6 +3,71 @@ function subclassOf(base) {
     return new _subclassOf();
 }
 function _subclassOf() {};
+function Brush(uri,spacing, size){
+	var this_ = this,
+		loaded = false,
+		scaling = size/100.0,
+		current_dist = 0,
+		prev_x,
+		prev_y;
+
+	this_.img = new Image();
+	this_.img.onload = function(){
+		this_.loaded = true;
+	};
+	this_.img.src = uri;
+	
+	this_.dropBrush = function(x,y){
+		prev_x = x;
+		prev_y = y;
+	};
+		
+	this_.moveBrush = function(x,y,canvas){
+		var dist_ang = getDistAndAngle(x,y);
+		 
+		current_dist+=dist_ang.dist;
+
+		while (current_dist>spacing){
+			var draw_x = prev_x+current_dist*Math.cos(dist_ang.ang);
+			var draw_y = prev_y+current_dist*Math.sin(dist_ang.ang);
+			current_dist -= spacing;
+			draw(draw_x,draw_y,dist_ang.ang,canvas);
+		}
+		draw(x,y,dist_ang.ang,canvas);
+
+		prev_x = x;
+		prev_y = y;
+	};
+	
+	var getDistAndAngle = function(x,y){
+		var dx = x-prev_x;
+		var dy = y-prev_y;
+		return {dist:Math.sqrt(dx*dx+dy*dy),ang:Math.atan2(dy,dx)};
+	};
+
+	this_.stamp = function(canvas){
+		canvas.save(); 
+		canvas.translate(x, y);
+		// this_.canvas.rotate(angle * TO_RADIANS); seen in overridden methods
+		canvas.scale(this_.size/100);
+		canvas.drawImage(this_.img, -(scaling*this_.img.width/2), -(scaling*this_.img.height/2));
+		canvas.restore();
+	}
+
+	this_.setScaling = function(size){
+		scaling = size/100.0;
+	};
+	
+	var draw = function(x,y,ang,canvas){
+		canvas.save(); 
+		canvas.translate(x, y);
+		// this_.canvas.rotate(angle * TO_RADIANS); seen in overridden methods
+		canvas.scale(scaling,scaling);
+		canvas.drawImage(this_.img, -(scaling*this_.img.width/2), -(scaling*this_.img.height/2));
+		canvas.restore();
+	};
+	
+};
 Surface.prototype = new UIElement();
 
 function Surface(x,y,w,h,id){
@@ -40,25 +105,27 @@ function Surface(x,y,w,h,id){
 	};
 	
 	this_.mousedown = function(e){
-		this_.oldX = e.pageX-this_.canv_element.offsetLeft;
-		this_.oldY = e.pageY-this_.canv_element.offsetTop;
+		var x = e.pageX-this_.canv_element.offsetLeft;
+		var y = e.pageY-this_.canv_element.offsetTop;
+
+		this_.brush.dropBrush(x,y);
 
 		$('body').bind('mousemove',this_.mousemove);
 		$('body').bind('mouseup',this_.mouseup);
 	};
 	
 	this_.mousemove = function(e){
-		var newX = e.pageX-this_.canv_element.offsetLeft;
-		var newY = e.pageY-this_.canv_element.offsetTop;
+		var x = e.pageX-this_.canv_element.offsetLeft;
+		var y = e.pageY-this_.canv_element.offsetTop;
 		
 		//this_.canvas.beginPath();
-		this_.canvas.moveTo(this_.oldX,this_.oldY);
-		this_.canvas.lineTo(newX,newY);
-		this_.canvas.stroke();
-		
-		this_.oldX = newX;
-		this_.oldY = newY;
-		
+		// this_.canvas.moveTo(this_.oldX,this_.oldY);
+		// this_.canvas.lineTo(newX,newY);
+		// this_.canvas.stroke();
+		// 
+		// this_.oldX = newX;
+		// this_.oldY = newY;
+		this_.brush.moveBrush(x,y,this_.canvas);
 	};
 	
 	this_.mouseup = function(e){
@@ -220,6 +287,7 @@ function UIInput(x,y,id,onclick){
 		this_.enabled = false;
 		$('#'+this_.id).unbind('click');
 	};
+
 };
 function UIElement(x,y,id){
 	var this_ = this;
@@ -440,4 +508,7 @@ $(document).ready(function(){
 	cp.set_pos(0,1,1); */
 	
 	var surface = new Surface(40,40,400,400,'surface');
+	var marker = new Brush('./img/marker.png',100*1/10,100);
+	
+	surface.setBrush(marker);
 });

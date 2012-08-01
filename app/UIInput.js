@@ -15,4 +15,5 @@ function UIInput(x,y,id,onclick){
 		this_.enabled = false;
 		$('#'+this_.id).unbind('click');
 	};
+
 };

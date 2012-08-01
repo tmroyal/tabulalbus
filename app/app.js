@@ -12,4 +12,7 @@ $(document).ready(function(){
 	cp.set_pos(0,1,1); */
 	
 	var surface = new Surface(40,40,400,400,'surface');
+	var marker = new Brush('./img/marker.png',100*1/10,100);
+	
+	surface.setBrush(marker);
 });

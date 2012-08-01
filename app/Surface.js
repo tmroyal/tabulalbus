@@ -35,25 +35,27 @@ function Surface(x,y,w,h,id){
 	};
 	
 	this_.mousedown = function(e){
-		this_.oldX = e.pageX-this_.canv_element.offsetLeft;
-		this_.oldY = e.pageY-this_.canv_element.offsetTop;
+		var x = e.pageX-this_.canv_element.offsetLeft;
+		var y = e.pageY-this_.canv_element.offsetTop;
+
+		this_.brush.dropBrush(x,y);
 
 		$('body').bind('mousemove',this_.mousemove);
 		$('body').bind('mouseup',this_.mouseup);
 	};
 	
 	this_.mousemove = function(e){
-		var newX = e.pageX-this_.canv_element.offsetLeft;
-		var newY = e.pageY-this_.canv_element.offsetTop;
+		var x = e.pageX-this_.canv_element.offsetLeft;
+		var y = e.pageY-this_.canv_element.offsetTop;
 		
 		//this_.canvas.beginPath();
-		this_.canvas.moveTo(this_.oldX,this_.oldY);
-		this_.canvas.lineTo(newX,newY);
-		this_.canvas.stroke();
-		
-		this_.oldX = newX;
-		this_.oldY = newY;
-		
+		// this_.canvas.moveTo(this_.oldX,this_.oldY);
+		// this_.canvas.lineTo(newX,newY);
+		// this_.canvas.stroke();
+		// 
+		// this_.oldX = newX;
+		// this_.oldY = newY;
+		this_.brush.moveBrush(x,y,this_.canvas);
 	};
 	
 	this_.mouseup = function(e){
