@@ -10,16 +10,19 @@ function Brush(druri, drpuri, spacing_perc, size){
 
 	this_.drag_img = new Image();
 	this_.drag_img.onload = function(){
-		this_.drag_img_loaded = true;
+		drag_img_loaded = true;
 	};
 	this_.drag_img.src = druri;
 	
 	this_.drop_img = new Image();
 	this_.drop_img.onload = function(){
-		this_.drop_img_loaded = true;
+		drop_img_loaded = true;
 	};
 	this_.drop_img.src = drpuri;
 	
+	this_.notloaded = function(){
+		return (drop_img_loaded == false) || (drag_img_loaded == false);	
+	};
 	
 	this_.dropBrush = function(x,y,canvas){
 		prev_x = x;
@@ -31,15 +34,17 @@ function Brush(druri, drpuri, spacing_perc, size){
 		var dist_ang = getDistAndAngle(x,y);
 		 
 		current_dist+=dist_ang.dist;
-
+		
+		if(current_dist>spacing){
+			draw(x,y,dist_ang.ang,canvas,this_.drag_img);
+		}
 		while (current_dist>spacing){
 			var draw_x = prev_x+current_dist*Math.cos(dist_ang.ang),
 				draw_y = prev_y+current_dist*Math.sin(dist_ang.ang);
 			current_dist -= spacing;
 			draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drag_img);
+			//draw(draw_x,draw_y,Math.random(Math.pi*2),canvas,this_.drag_img);
 		}
-		draw(x,y,dist_ang.ang,canvas,this_.drag_img);
-
 		prev_x = x;
 		prev_y = y;
 	};
@@ -52,11 +57,11 @@ function Brush(druri, drpuri, spacing_perc, size){
 
 	this_.stamp = function(canvas){
 		canvas.save(); 
-		canvas.translate(x, y);
-		// this_.canvas.rotate(angle * TO_RADIANS); seen in overridden methods
-		canvas.scale(this_.size/100);
-		canvas.drawImage(this_.img, -(scaling*this_.img.width/2), -(scaling*this_.img.height/2));
+		canvas.translate(50, 50);//what are the proper x and y
+		canvas.scale(scaling,scaling);
+		canvas.drawImage(this_.drag_img, -this_.drag_img.width/2, -this_.drag_img.height/2);
 		canvas.restore();
+		if(drag_img_loaded==false){console.log('theres the problem');}
 	}
 
 	this_.setScaling = function(size){
@@ -66,9 +71,8 @@ function Brush(druri, drpuri, spacing_perc, size){
 	var draw = function(x,y,ang,canvas,img){
 		canvas.save(); 
 		canvas.translate(x, y);
-		canvas.rotate(ang); //seen in overridden methods
+		canvas.rotate(ang);
 		canvas.scale(scaling,scaling);
-		//canvas.drawImage(img, -(scaling*img.width/2), -(scaling*img.height/2));
 		canvas.drawImage(img,-img.width/2,-img.height/2);
 		canvas.restore();
 	};

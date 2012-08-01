@@ -15,16 +15,21 @@ function Brush(druri, drpuri, spacing_perc, size){
 
 	this_.drag_img = new Image();
 	this_.drag_img.onload = function(){
-		this_.drag_img_loaded = true;
+		drag_img_loaded = true;
 	};
 	this_.drag_img.src = druri;
 	
+	
+	
 	this_.drop_img = new Image();
 	this_.drop_img.onload = function(){
-		this_.drop_img_loaded = true;
+		drop_img_loaded = true;
 	};
 	this_.drop_img.src = drpuri;
 	
+	this_.notloaded = function(){
+		return (drop_img_loaded == false) || (drag_img_loaded == false);	
+	};
 	
 	this_.dropBrush = function(x,y,canvas){
 		prev_x = x;
@@ -36,15 +41,17 @@ function Brush(druri, drpuri, spacing_perc, size){
 		var dist_ang = getDistAndAngle(x,y);
 		 
 		current_dist+=dist_ang.dist;
-
+		
+		if(current_dist>spacing){
+			draw(x,y,dist_ang.ang,canvas,this_.drag_img);
+		}
 		while (current_dist>spacing){
 			var draw_x = prev_x+current_dist*Math.cos(dist_ang.ang),
 				draw_y = prev_y+current_dist*Math.sin(dist_ang.ang);
 			current_dist -= spacing;
 			draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drag_img);
+			//draw(draw_x,draw_y,Math.random(Math.pi*2),canvas,this_.drag_img);
 		}
-		draw(x,y,dist_ang.ang,canvas,this_.drag_img);
-
 		prev_x = x;
 		prev_y = y;
 	};
@@ -57,11 +64,11 @@ function Brush(druri, drpuri, spacing_perc, size){
 
 	this_.stamp = function(canvas){
 		canvas.save(); 
-		canvas.translate(x, y);
-		// this_.canvas.rotate(angle * TO_RADIANS); seen in overridden methods
-		canvas.scale(this_.size/100);
-		canvas.drawImage(this_.img, -(scaling*this_.img.width/2), -(scaling*this_.img.height/2));
+		canvas.translate(50, 50);//what are the proper x and y
+		canvas.scale(scaling,scaling);
+		canvas.drawImage(this_.drag_img, -this_.drag_img.width/2, -this_.drag_img.height/2);
 		canvas.restore();
+		if(drag_img_loaded==false){console.log('theres the problem');}
 	}
 
 	this_.setScaling = function(size){
@@ -71,9 +78,8 @@ function Brush(druri, drpuri, spacing_perc, size){
 	var draw = function(x,y,ang,canvas,img){
 		canvas.save(); 
 		canvas.translate(x, y);
-		canvas.rotate(ang); //seen in overridden methods
+		canvas.rotate(ang);
 		canvas.scale(scaling,scaling);
-		//canvas.drawImage(img, -(scaling*img.width/2), -(scaling*img.height/2));
 		canvas.drawImage(img,-img.width/2,-img.height/2);
 		canvas.restore();
 	};
@@ -92,8 +98,8 @@ function Surface(x,y,w,h,id){
 			'id':id
 		}).appendTo('body');
 		$('#' + this_.id)
-			.attr('height', this_.w)
-			.attr('width', this_.h)
+			.attr('height', this_.h)
+			.attr('width', this_.w)
 			.css({
 				'border-style':'solid',
 					'border-color': '#6e6e6e',
@@ -114,8 +120,8 @@ function Surface(x,y,w,h,id){
 
 		this_.brush.dropBrush(x,y,this_.canvas);
 
-		$('body').bind('mousemove',this_.mousemove);
-		$('body').bind('mouseup',this_.mouseup);
+		$(document).bind('mousemove',this_.mousemove);
+		$(document).bind('mouseup',this_.mouseup);
 	};
 	
 	this_.mousemove = function(e){
@@ -133,8 +139,8 @@ function Surface(x,y,w,h,id){
 	};
 	
 	this_.mouseup = function(e){
-		$('body').unbind('mousemove');
-		$('body').unbind('mouseup');
+		$(document).unbind('mousemove');
+		$(document).unbind('mouseup');
 	}
 	
 	this_.setBrush = function(brush){
@@ -147,9 +153,16 @@ function Surface(x,y,w,h,id){
 
 BrushViewer.prototype = UIElement();
 
-function BrushViewer(x,y,id){
+function BrushViewer(x,y,id,color,brush){
 	var this_=this;
 	UIElement.call(this_,x,y,id);
+	this_.curcolor = color;
+	this_.brush = brush;
+
+	this_.setBrush = function(brush){
+		this_.brush = brush;
+		this_.updateColor(this_.curcolor);
+	};
 
 	this_.init = function(x,y) {
 		$('<canvas/>', {
@@ -168,37 +181,18 @@ function BrushViewer(x,y,id){
 
 
 	this_.updateColor = function(color) {
-		// $('#'+this_.id).css({
-		// 			'background-color': 'rgb('+color.r+','+color.g+','+color.b+')'
-		// 		});
-		this_.canvas.clearRect(0,0,100,100);
-		this_.canvas.drawImage( img, 0, 0 );
+		this_.canvas.clearRect(0,0);
+		this_.brush.stamp(this_.canvas);
 	    
 		Caman("#"+id, function () {
 		    this.colorize(color.r,color.g,color.b,100).render();
 		});
+		
 	};
-	
-	// to do this, we will get the white image
-	// and then do the imgproc stuff from play my code
-	// and then use the brush viewer canvas to store the image(?)
-	
 
 	this_.canvas = document.getElementById(this_.id).getContext('2d');
-	var img = new Image();
-	
-	img.onload=function(){
-
-	    this_.canvas.drawImage( img, 0, 0 );
-		Caman("#"+id, function () {
-		    this.colorize(255,0,0,100).render();
-		});
-	};
-	
-
-	img.src='./img/markerw.png';
-	
 	//this_.canvas.fillRect(0,0,100,100);
+	
 
 };
 
@@ -499,21 +493,23 @@ function ColorPicker(x,y,id,color){
 
 
 $(document).ready(function(){
-	/*
+	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,50);
 	var clr = new Color(0,0,0,'color');
-	var cp = new ColorPicker(20,20,'cp',clr);
-	var	brush_viewer = new BrushViewer(200,10,'bview');
-	
+	var cp = new ColorPicker(40,460,'cp',clr);
+	var	brush_viewer = new BrushViewer(240,460,'bview',clr,brush);
 	
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
 	clr.add_broadcastee(brush_viewer.updateColor);
-	cp.set_pos(0,1,1); */
+	cp.set_pos(0,1,1); 
 	
-	var surface = new Surface(40,40,400,400,'surface');
+	var surface = new Surface(40,40,800,400,'surface');
+	//roung 0.2
+	//thin 0.6
+	//long 0.2
 
-	var marker = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.5,60);
 	
-	surface.setBrush(marker);
+	surface.setBrush(brush);
+	
 });

@@ -11,8 +11,8 @@ function Surface(x,y,w,h,id){
 			'id':id
 		}).appendTo('body');
 		$('#' + this_.id)
-			.attr('height', this_.w)
-			.attr('width', this_.h)
+			.attr('height', this_.h)
+			.attr('width', this_.w)
 			.css({
 				'border-style':'solid',
 					'border-color': '#6e6e6e',
@@ -33,8 +33,8 @@ function Surface(x,y,w,h,id){
 
 		this_.brush.dropBrush(x,y,this_.canvas);
 
-		$('body').bind('mousemove',this_.mousemove);
-		$('body').bind('mouseup',this_.mouseup);
+		$(document).bind('mousemove',this_.mousemove);
+		$(document).bind('mouseup',this_.mouseup);
 	};
 	
 	this_.mousemove = function(e){
@@ -52,8 +52,8 @@ function Surface(x,y,w,h,id){
 	};
 	
 	this_.mouseup = function(e){
-		$('body').unbind('mousemove');
-		$('body').unbind('mouseup');
+		$(document).unbind('mousemove');
+		$(document).unbind('mouseup');
 	}
 	
 	this_.setBrush = function(brush){
