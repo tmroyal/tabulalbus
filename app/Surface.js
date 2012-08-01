@@ -24,13 +24,6 @@ function Surface(x,y,w,h,id){
 		this_.setPosition(x,y);
 		this_.canv_element = document.getElementById(this_.id);
 		this_.canvas = this_.canv_element.getContext('2d');
-		
-		this_.canvas.beginPath();
-		this_.canvas.strokeStyle="red";
-		this_.canvas.moveTo( 20 ,20);
-		this_.canvas.lineTo(300,300);
-		this_.canvas.lineTo(400,100);
-		this_.canvas.stroke();
 
 	};
 	
@@ -38,7 +31,7 @@ function Surface(x,y,w,h,id){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
 
-		this_.brush.dropBrush(x,y);
+		this_.brush.dropBrush(x,y,this_.canvas);
 
 		$('body').bind('mousemove',this_.mousemove);
 		$('body').bind('mouseup',this_.mouseup);

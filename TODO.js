@@ -6,13 +6,12 @@ Brushes
 5. Noise/Paintrush
 
 
-1. Implement marker and find settings
-	- try different sizes
-	- try different color
-2. Implement circle and find settings
-3. Implement random brush
-4. implement random paint brush
-5. implement paint brush
+
+
+1. color selections
+2. Brush down
+2. Implement other brushes
+3. implement random paint brush
 --------------
 1. Implement brush selector
 2. Implement brush size selector
@@ -21,4 +20,11 @@ Brushes
 1. Implement file saving
 ----------------
 1. Try to break
-2. Test on other platforms
+2. Test on other platforms'
+
+
+1. Current brush#
+2. Lighter brush#
+3. Round brush#
+4. Splatter
+5. Randomstrokes
