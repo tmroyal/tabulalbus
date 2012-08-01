@@ -74,7 +74,7 @@ function Brush(druri, drpuri, spacing_perc, size){
 	
 	var draw = function(x,y,ang,canvas,img){
 		canvas.save(); 
-        canvas.globalAlpha = 0.1;
+        canvas.globalAlpha = 0.2;
 		canvas.translate(x, y);
 		canvas.rotate(ang);
 		//canvas.scale(scaling,scaling);

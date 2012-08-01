@@ -79,7 +79,7 @@ function Brush(druri, drpuri, spacing_perc, size){
 	
 	var draw = function(x,y,ang,canvas,img){
 		canvas.save(); 
-        canvas.globalAlpha = 0.1;
+        canvas.globalAlpha = 0.2;
 		canvas.translate(x, y);
 		canvas.rotate(ang);
 		//canvas.scale(scaling,scaling);
@@ -498,7 +498,7 @@ function ColorPicker(x,y,id,color){
 
 
 $(document).ready(function(){
-	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,100);
+	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,40);
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
 	var	brush_viewer = new BrushViewer(240,460,'bview',clr,brush);
