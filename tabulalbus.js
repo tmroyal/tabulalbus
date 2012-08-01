@@ -3,82 +3,74 @@ function subclassOf(base) {
     return new _subclassOf();
 }
 function _subclassOf() {};
-function Brush(uri,spacing, size){
-	var this_ = this;
-	this_.loaded = false;
-	this_.size = size;
-	
-	this_.img = new Image();
-	this_.img.onload = function(){
-		this_.loaded = true;
-	};
-	this_.img = uri;
-	
-	this_.moveCursor = function(){
-		// upon motion, record the number of pixels moved
-		// if gt spacing add a point
-		// then mod, add pnt, until done
-	};
-	this_.write = function(canvas){
-		this_;
-		
-		// iterate through points made in moveCursor, and write to canvas 
-	};
-	
-	this_.writePrototype = function(canvas){
-		// write once (or multitimes) for random
-	}
-	this_.reset = function(){
-		
-	};
-
-	this_.setSize = function(size){
-		this_.size = size;
-	};
-};
-RandomBrush.prototype = new Brush();
-
-function RandomBrush(uri, size){
-	Brush.call(this,uri,0,size);
-	var this_ = this;
-	
-	this_.draw = function(canvas){
-		this_;
-		
-		// iterate through points made in moveCursor, and write to canvas 
-	};
-	
-	this_.writePrototype = function(canvas){
-		// write once (or multitimes) for random
-	}
-	
-};
-
-
-DirectionBrush.prototype = new Brush();
-
-function DirectionBrush2(uri, size){
-	Brush.call(this,uri,0,size);
-	var this_ = this;
-	
-	this_.draw = function(canvas){
-		this_;
-		
-		// iterate through points made in moveCursor, and write to canvas 
-	};
-	
-	this_.writePrototype = function(canvas){
-		// write once (or multitimes) for random
-	}
-	
-};
-
 Surface.prototype = new UIElement();
 
-function Surface(x,y,id){
-	var this_ = this;
+function Surface(x,y,w,h,id){
 	UIElement.call(this,x,y,id);
+	var this_ = this;
+	this_.w = w;
+	this_.h = h;
+		
+	this_.init = function(x,y){
+		$('<canvas/>',{
+			'id':id
+		}).appendTo('body');
+		$('#' + this_.id)
+			.attr('height', this_.w)
+			.attr('width', this_.h)
+			.css({
+				'border-style':'solid',
+					'border-color': '#6e6e6e',
+					'border-width': '2px'});
+					
+		$('#' + this_.id).bind('mousedown',this_.mousedown);
+
+				
+		this_.setPosition(x,y);
+		this_.canv_element = document.getElementById(this_.id);
+		this_.canvas = this_.canv_element.getContext('2d');
+		
+		this_.canvas.beginPath();
+		this_.canvas.strokeStyle="red";
+		this_.canvas.moveTo( 20 ,20);
+		this_.canvas.lineTo(300,300);
+		this_.canvas.lineTo(400,100);
+		this_.canvas.stroke();
+
+	};
 	
+	this_.mousedown = function(e){
+		this_.oldX = e.pageX-this_.canv_element.offsetLeft;
+		this_.oldY = e.pageY-this_.canv_element.offsetTop;
+
+		$('body').bind('mousemove',this_.mousemove);
+		$('body').bind('mouseup',this_.mouseup);
+	};
+	
+	this_.mousemove = function(e){
+		var newX = e.pageX-this_.canv_element.offsetLeft;
+		var newY = e.pageY-this_.canv_element.offsetTop;
+		
+		//this_.canvas.beginPath();
+		this_.canvas.moveTo(this_.oldX,this_.oldY);
+		this_.canvas.lineTo(newX,newY);
+		this_.canvas.stroke();
+		
+		this_.oldX = newX;
+		this_.oldY = newY;
+		
+	};
+	
+	this_.mouseup = function(e){
+		$('body').unbind('mousemove');
+		$('body').unbind('mouseup');
+	}
+	
+	this_.setBrush = function(brush){
+		this_.brush = brush
+	}
+	
+	this_.init(x,y);
 };
 
 
@@ -91,7 +83,6 @@ function BrushViewer(x,y,id){
 	this_.init = function(x,y) {
 		$('<canvas/>', {
 			'id': this_.id,
-
 		})
 		.appendTo('body')
 		$('#' + this_.id).attr('height', 100).attr('width', 100);
@@ -436,6 +427,7 @@ function ColorPicker(x,y,id,color){
 
 
 $(document).ready(function(){
+	/*
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(20,20,'cp',clr);
 	var	brush_viewer = new BrushViewer(200,10,'bview');
@@ -445,5 +437,7 @@ $(document).ready(function(){
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
 	clr.add_broadcastee(brush_viewer.updateColor);
-	cp.set_pos(0,1,1);
+	cp.set_pos(0,1,1); */
+	
+	var surface = new Surface(40,40,400,400,'surface');
 });

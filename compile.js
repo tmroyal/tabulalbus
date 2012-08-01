@@ -6,9 +6,9 @@ new compressor.minify({
     type: 'no-compress',
     fileIn: [
 				'./sugar/subclassOf.js'
-				,'./app/Brush.js'
-				,'./app/RandomBrush.js'
-				,'./app/DirectionBrush.js'
+				//,'./app/Brush.js'
+				//,'./app/RandomBrush.js'
+				//,'./app/DirectionBrush.js'
 				,'./app/Surface.js'
 				,'./app/BrushViewer.js'
 				,'./app/Color.js'
