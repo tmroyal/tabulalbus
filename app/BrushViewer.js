@@ -7,7 +7,6 @@ function BrushViewer(x,y,id){
 	this_.init = function(x,y) {
 		$('<canvas/>', {
 			'id': this_.id,
-
 		})
 		.appendTo('body')
 		$('#' + this_.id).attr('height', 100).attr('width', 100);

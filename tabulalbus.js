@@ -3,6 +3,85 @@ function subclassOf(base) {
     return new _subclassOf();
 }
 function _subclassOf() {};
+function Brush(uri,spacing, size){
+	var this_ = this;
+	this_.loaded = false;
+	this_.size = size;
+	
+	this_.img = new Image();
+	this_.img.onload = function(){
+		this_.loaded = true;
+	};
+	this_.img = uri;
+	
+	this_.moveCursor = function(){
+		// upon motion, record the number of pixels moved
+		// if gt spacing add a point
+		// then mod, add pnt, until done
+	};
+	this_.write = function(canvas){
+		this_;
+		
+		// iterate through points made in moveCursor, and write to canvas 
+	};
+	
+	this_.writePrototype = function(canvas){
+		// write once (or multitimes) for random
+	}
+	this_.reset = function(){
+		
+	};
+
+	this_.setSize = function(size){
+		this_.size = size;
+	};
+};
+RandomBrush.prototype = new Brush();
+
+function RandomBrush(uri, size){
+	Brush.call(this,uri,0,size);
+	var this_ = this;
+	
+	this_.draw = function(canvas){
+		this_;
+		
+		// iterate through points made in moveCursor, and write to canvas 
+	};
+	
+	this_.writePrototype = function(canvas){
+		// write once (or multitimes) for random
+	}
+	
+};
+
+
+DirectionBrush.prototype = new Brush();
+
+function DirectionBrush2(uri, size){
+	Brush.call(this,uri,0,size);
+	var this_ = this;
+	
+	this_.draw = function(canvas){
+		this_;
+		
+		// iterate through points made in moveCursor, and write to canvas 
+	};
+	
+	this_.writePrototype = function(canvas){
+		// write once (or multitimes) for random
+	}
+	
+};
+
+Surface.prototype = new UIElement();
+
+function Surface(x,y,id){
+	var this_ = this;
+	UIElement.call(this,x,y,id);
+	
+};
+
+
 BrushViewer.prototype = UIElement();
 
 function BrushViewer(x,y,id){
@@ -347,7 +426,6 @@ function ColorPicker(x,y,id,color){
 	});
 	
 	this_.set_pos=function(h,s,v){
-		console.log(this_);
 		this_.hueslider.set(h);
 		this_.satslider.set(s);
 		this_.valslider.set(v);

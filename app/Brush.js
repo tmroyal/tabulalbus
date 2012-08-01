@@ -14,13 +14,13 @@ function Brush(uri,spacing, size){
 		// if gt spacing add a point
 		// then mod, add pnt, until done
 	};
-	this_.write = function(canvas){
+	this_.draw = function(canvas){
 		this_;
 		
 		// iterate through points made in moveCursor, and write to canvas 
 	};
 	
-	this_.writePrototype = function(canvas){
+	this_.stamp = function(canvas){
 		// write once (or multitimes) for random
 	}
 	this_.reset = function(){
