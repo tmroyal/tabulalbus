@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,50);
+	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,100);
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
 	var	brush_viewer = new BrushViewer(240,460,'bview',clr,brush);

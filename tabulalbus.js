@@ -13,13 +13,13 @@ function Brush(druri, drpuri, spacing_perc, size){
 		prev_x,
 		prev_y;
 
+	this_.drawing = new Image();
+
 	this_.drag_img = new Image();
 	this_.drag_img.onload = function(){
 		drag_img_loaded = true;
 	};
 	this_.drag_img.src = druri;
-	
-	
 	
 	this_.drop_img = new Image();
 	this_.drop_img.onload = function(){
@@ -34,7 +34,7 @@ function Brush(druri, drpuri, spacing_perc, size){
 	this_.dropBrush = function(x,y,canvas){
 		prev_x = x;
 		prev_y = y;
-		draw(prev_x,prev_y,Math.random(Math.pi*2),canvas,this_.drop_img);
+		//draw(prev_x,prev_y,Math.random(Math.pi*2),canvas,this_.drop_img);
 	};
 		
 	this_.moveBrush = function(x,y,canvas){
@@ -43,13 +43,15 @@ function Brush(druri, drpuri, spacing_perc, size){
 		current_dist+=dist_ang.dist;
 		
 		if(current_dist>spacing){
-			draw(x,y,dist_ang.ang,canvas,this_.drag_img);
+			//draw(x,y,dist_ang.ang,canvas,this_.drag_img);
+			draw(x,y,dist_ang.ang,canvas,this_.drawing);
 		}
 		while (current_dist>spacing){
 			var draw_x = prev_x+current_dist*Math.cos(dist_ang.ang),
 				draw_y = prev_y+current_dist*Math.sin(dist_ang.ang);
 			current_dist -= spacing;
-			draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drag_img);
+			//draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drag_img);
+			draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drawing);
 			//draw(draw_x,draw_y,Math.random(Math.pi*2),canvas,this_.drag_img);
 		}
 		prev_x = x;
@@ -77,11 +79,12 @@ function Brush(druri, drpuri, spacing_perc, size){
 	
 	var draw = function(x,y,ang,canvas,img){
 		canvas.save(); 
+        canvas.globalAlpha = 0.1;
 		canvas.translate(x, y);
 		canvas.rotate(ang);
-		canvas.scale(scaling,scaling);
+		//canvas.scale(scaling,scaling);
 		canvas.drawImage(img,-img.width/2,-img.height/2);
-		canvas.restore();
+		canvas.restore();        
 	};
 	
 };
@@ -187,10 +190,12 @@ function BrushViewer(x,y,id,color,brush){
 		Caman("#"+id, function () {
 		    this.colorize(color.r,color.g,color.b,100).render();
 		});
-		
+		this_.brush.drawing = this_.canvas_element;
+
 	};
 
-	this_.canvas = document.getElementById(this_.id).getContext('2d');
+	this_.canvas_element = document.getElementById(this_.id)
+	this_.canvas = this_.canvas_element.getContext('2d');
 	//this_.canvas.fillRect(0,0,100,100);
 	
 
@@ -493,7 +498,7 @@ function ColorPicker(x,y,id,color){
 
 
 $(document).ready(function(){
-	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,50);
+	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,100);
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
 	var	brush_viewer = new BrushViewer(240,460,'bview',clr,brush);

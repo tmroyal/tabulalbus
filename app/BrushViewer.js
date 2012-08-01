@@ -34,10 +34,12 @@ function BrushViewer(x,y,id,color,brush){
 		Caman("#"+id, function () {
 		    this.colorize(color.r,color.g,color.b,100).render();
 		});
-		
+		this_.brush.drawing = this_.canvas_element;
+
 	};
 
-	this_.canvas = document.getElementById(this_.id).getContext('2d');
+	this_.canvas_element = document.getElementById(this_.id)
+	this_.canvas = this_.canvas_element.getContext('2d');
 	//this_.canvas.fillRect(0,0,100,100);
 	
 
