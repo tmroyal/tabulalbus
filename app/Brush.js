@@ -21,11 +21,7 @@ function Brush(druri, drpuri, spacing_perc, size){
 		drop_img_loaded = true;
 	};
 	this_.drop_img.src = drpuri;
-	
-	this_.notloaded = function(){
-		return (drop_img_loaded == false) || (drag_img_loaded == false);	
-	};
-	
+		
 	this_.dropBrush = function(x,y,canvas){
 		prev_x = x;
 		prev_y = y;

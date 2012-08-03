@@ -13,7 +13,7 @@ function BrushViewer(x,y,id,color,brush){
 
 	this_.init = function(x,y) {
 		$('<canvas/>', {
-			'id': this_.id,
+			'id': this_.id
 		})
 		.appendTo('body')
 		$('#' + this_.id).attr('height', 100).attr('width', 100);
@@ -26,6 +26,12 @@ function BrushViewer(x,y,id,color,brush){
 	};
 	this_.init(x,y);
 
+	this_.hide(){
+		$('#'+this_.id).hide();
+	}
+	this_.show(){
+		$('#'+this_.id).show();
+	}
 
 	this_.updateColor = function(color) {
 		this_.canvas.clearRect(0,0);
@@ -40,7 +46,5 @@ function BrushViewer(x,y,id,color,brush){
 
 	this_.canvas_element = document.getElementById(this_.id)
 	this_.canvas = this_.canvas_element.getContext('2d');
-	//this_.canvas.fillRect(0,0,100,100);
 	
-
 };

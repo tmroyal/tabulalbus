@@ -169,14 +169,14 @@ function BrushViewer(x,y,id,color,brush){
 
 	this_.init = function(x,y) {
 		$('<canvas/>', {
-			'id': this_.id,
+			'id': this_.id
 		})
 		.appendTo('body')
 		$('#' + this_.id).attr('height', 100).attr('width', 100);
 		$('#' + this_.id).css({'border-style':'solid',
 		'border-color': '#6e6e6e',
 		'border-width': '2px',
-		'border-radius': '10px'});
+		'border-radius': '10px'}).hide();
 	
 		this_.setPosition(x,y);
 	};

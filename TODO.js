@@ -8,6 +8,7 @@ Brushes
 
 
 
+
 1. color selections
 2. Brush down
 2. Implement other brushes
@@ -28,3 +29,7 @@ Brushes
 3. Round brush#
 4. Splatter
 5. Randomstrokes
+
+
+1. Painter - which displays the brush and marks the canvas
+2. Brush - which stores the image information
