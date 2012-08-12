@@ -1,3 +1,13 @@
+/*
+ * UIElement
+ *
+ * Description: Base class for all UI elements. 
+ *
+ *
+ */
+
+
+
 function UIElement(x,y,id){
 	var this_ = this;
 	

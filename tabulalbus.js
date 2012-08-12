@@ -3,17 +3,20 @@ function subclassOf(base) {
     return new _subclassOf();
 }
 function _subclassOf() {};
-function Brush(druri, drpuri, spacing_perc, size){
+/*
+ * Brush.js
+ *
+ * Description: stores brush image and 'stamps' painter with brush of specified size.
+ *
+ *
+ */
+
+
+function Brush(druri, drpuri){
 	var this_ = this,
 		drag_img_loaded = false,
-		drop_img_loaded = false,
-		scaling = size/100.0,
-		current_dist = 0,
-		spacing = size*spacing_perc,
-		prev_x,
-		prev_y;
+		drop_img_loaded = false;
 
-	this_.drawing = new Image();
 
 	this_.drag_img = new Image();
 	this_.drag_img.onload = function(){
@@ -27,44 +30,7 @@ function Brush(druri, drpuri, spacing_perc, size){
 	};
 	this_.drop_img.src = drpuri;
 	
-	this_.notloaded = function(){
-		return (drop_img_loaded == false) || (drag_img_loaded == false);	
-	};
-	
-	this_.dropBrush = function(x,y,canvas){
-		prev_x = x;
-		prev_y = y;
-		//draw(prev_x,prev_y,Math.random(Math.pi*2),canvas,this_.drop_img);
-	};
-		
-	this_.moveBrush = function(x,y,canvas){
-		var dist_ang = getDistAndAngle(x,y);
-		 
-		current_dist+=dist_ang.dist;
-		
-		if(current_dist>spacing){
-			//draw(x,y,dist_ang.ang,canvas,this_.drag_img);
-			draw(x,y,dist_ang.ang,canvas,this_.drawing);
-		}
-		while (current_dist>spacing){
-			var draw_x = prev_x+current_dist*Math.cos(dist_ang.ang),
-				draw_y = prev_y+current_dist*Math.sin(dist_ang.ang);
-			current_dist -= spacing;
-			//draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drag_img);
-			draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drawing);
-			//draw(draw_x,draw_y,Math.random(Math.pi*2),canvas,this_.drag_img);
-		}
-		prev_x = x;
-		prev_y = y;
-	};
-	
-	var getDistAndAngle = function(x,y){
-		var dx = x-prev_x,
-			dy = y-prev_y;
-		return {dist:Math.sqrt(dx*dx+dy*dy),ang:Math.atan2(dy,dx)};
-	};
-
-	this_.stamp = function(canvas){
+	this_.stamp = function(canvas, scaling){
 		canvas.save(); 
 		canvas.translate(50, 50);//what are the proper x and y
 		canvas.scale(scaling,scaling);
@@ -72,22 +38,16 @@ function Brush(druri, drpuri, spacing_perc, size){
 		canvas.restore();
 		if(drag_img_loaded==false){console.log('theres the problem');}
 	}
-
-	this_.setScaling = function(size){
-		scaling = size/100.0;
-	};
-	
-	var draw = function(x,y,ang,canvas,img){
-		canvas.save(); 
-        canvas.globalAlpha = 0.2;
-		canvas.translate(x, y);
-		canvas.rotate(ang);
-		//canvas.scale(scaling,scaling);
-		canvas.drawImage(img,-img.width/2,-img.height/2);
-		canvas.restore();        
-	};
-	
 };
+/*
+ * Surface
+ *
+ * Description: Contains the canvas element, and a reference to all painters
+ *				and facilitates all drawing to the screen
+ *
+ *
+ */
+
 Surface.prototype = new UIElement();
 
 function Surface(x,y,w,h,id){
@@ -109,19 +69,17 @@ function Surface(x,y,w,h,id){
 					'border-width': '2px'});
 					
 		$('#' + this_.id).bind('mousedown',this_.mousedown);
-
-				
+		
 		this_.setPosition(x,y);
 		this_.canv_element = document.getElementById(this_.id);
 		this_.canvas = this_.canv_element.getContext('2d');
-
 	};
 	
 	this_.mousedown = function(e){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
 
-		this_.brush.dropBrush(x,y,this_.canvas);
+		this_.painter.dropBrush(x,y,this_.canvas);
 
 		$(document).bind('mousemove',this_.mousemove);
 		$(document).bind('mouseup',this_.mouseup);
@@ -131,14 +89,7 @@ function Surface(x,y,w,h,id){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
 		
-		//this_.canvas.beginPath();
-		// this_.canvas.moveTo(this_.oldX,this_.oldY);
-		// this_.canvas.lineTo(newX,newY);
-		// this_.canvas.stroke();
-		// 
-		// this_.oldX = newX;
-		// this_.oldY = newY;
-		this_.brush.moveBrush(x,y,this_.canvas);
+		this_.painter.moveBrush(x,y,this_.canvas);
 	};
 	
 	this_.mouseup = function(e){
@@ -146,21 +97,35 @@ function Surface(x,y,w,h,id){
 		$(document).unbind('mouseup');
 	}
 	
-	this_.setBrush = function(brush){
-		this_.brush = brush
+	this_.setPainter = function(painter){
+		this_.painter = painter;
 	}
 	
 	this_.init(x,y);
 };
 
 
-BrushViewer.prototype = UIElement();
+/*
+ * Painter.js
+ *
+ * Description: A surface for displaying the brush and a canvas element that
+ *				serves to enables drawing to the canvas. Hideable to support
+ *				multiple-users.
+ */
 
-function BrushViewer(x,y,id,color,brush){
-	var this_=this;
+Painter.prototype = UIElement();
+
+function Painter(x,y,id,color,init_brush, spacing_perc, size){
+	var this_=this,
+		current_dist = 0,
+		scaling = size/100.0,
+		spacing = size*spacing_perc,
+		prev_x,
+		prev_y;
+		
 	UIElement.call(this_,x,y,id);
 	this_.curcolor = color;
-	this_.brush = brush;
+	this_.brush = init_brush;
 
 	this_.setBrush = function(brush){
 		this_.brush = brush;
@@ -173,19 +138,27 @@ function BrushViewer(x,y,id,color,brush){
 		})
 		.appendTo('body')
 		$('#' + this_.id).attr('height', 100).attr('width', 100);
-		$('#' + this_.id).css({'border-style':'solid',
-		'border-color': '#6e6e6e',
-		'border-width': '2px',
-		'border-radius': '10px'}).hide();
+		$('#' + this_.id).css({
+			'border-style':'solid',
+			'border-color': '#6e6e6e',
+			'border-width': '2px',
+			'border-radius': '10px'
+		});
 	
 		this_.setPosition(x,y);
 	};
 	this_.init(x,y);
 
+	this_.hide= function(){
+		$('#'+this_.id).hide();
+	}
+	this_.show = function(){
+		$('#'+this_.id).show();
+	}
 
 	this_.updateColor = function(color) {
 		this_.canvas.clearRect(0,0);
-		this_.brush.stamp(this_.canvas);
+		this_.brush.stamp(this_.canvas,scaling);
 	    
 		Caman("#"+id, function () {
 		    this.colorize(color.r,color.g,color.b,100).render();
@@ -196,10 +169,63 @@ function BrushViewer(x,y,id,color,brush){
 
 	this_.canvas_element = document.getElementById(this_.id)
 	this_.canvas = this_.canvas_element.getContext('2d');
-	//this_.canvas.fillRect(0,0,100,100);
 	
-
+	this_.dropBrush = function(x,y,canvas){
+		prev_x = x;
+		prev_y = y;
+		//draw(prev_x,prev_y,Math.random(Math.pi*2),canvas,this_.drop_img);
+	};
+	
+	this_.moveBrush = function(x,y,canvas){
+		var dist_ang = getDistAndAngle(x,y);
+		 
+		current_dist+=dist_ang.dist;
+		
+		if(current_dist>spacing){
+			//draw(x,y,dist_ang.ang,canvas,this_.drag_img);
+			draw(x,y,dist_ang.ang,canvas,this_.canvas_element);
+		}
+		while (current_dist>spacing){
+			var draw_x = prev_x+current_dist*Math.cos(dist_ang.ang),
+				draw_y = prev_y+current_dist*Math.sin(dist_ang.ang);
+			current_dist -= spacing;
+			//draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drag_img);
+			draw(draw_x,draw_y,dist_ang.ang,canvas,this_.canvas_element);
+			//draw(draw_x,draw_y,Math.random(Math.pi*2),canvas,this_.drag_img);
+		}
+		prev_x = x;
+		prev_y = y;
+	};
+	
+	var getDistAndAngle = function(x,y){
+		var dx = x-prev_x,
+			dy = y-prev_y;
+		return {dist:Math.sqrt(dx*dx+dy*dy),ang:Math.atan2(dy,dx)};
+	};
+	
+	this_.setScaling = function(size){
+		scaling = size/100.0;
+	};
+	
+	var draw = function(x,y,ang,canvas,img){
+		canvas.save(); 
+        canvas.globalAlpha = 0.2;
+		canvas.translate(x, y);
+		canvas.rotate(ang);
+		//canvas.scale(scaling,scaling);
+		canvas.drawImage(img,-img.width/2,-img.height/2);
+		canvas.restore();        
+	};
 };
+
+/*
+ * Color.js
+ *
+ * Description: Contains the color with all applicable callbacks so that 
+ 				it's value is populated to all applicable places.
+ *
+ *
+ */
 
 
 function Color(h,s,v){
@@ -273,6 +299,15 @@ function Color(h,s,v){
 	this_.color = this_.HSVtoRGB(this.h,this.s,this.v);
 };
 
+/*
+ * UIElement.js
+ *
+ * Description: Bass class for all UI elements that support user interaction.
+ *
+ */
+
+
+
 UIInput.prototype = new UIElement();
 
 function UIInput(x,y,id,onclick){
@@ -292,6 +327,16 @@ function UIInput(x,y,id,onclick){
 	};
 
 };
+/*
+ * UIElement
+ *
+ * Description: Base class for all UI elements. 
+ *
+ *
+ */
+
+
+
 function UIElement(x,y,id){
 	var this_ = this;
 	
@@ -318,6 +363,16 @@ function UIElement(x,y,id){
 }
 
 
+/*
+ * Button
+ *
+ * Description: Class for a button. 
+ *
+ *
+ */
+
+
+
 Button.prototype = UIInput();
 
 function Button(x,y,id,onclick){
@@ -336,6 +391,16 @@ function Button(x,y,id,onclick){
 		$('#'+this.id).click(this.onclick);
 	};
 };
+
+/*
+ * Slider.js
+ *
+ * Description: UIElement that supports the addition of a slider.
+ *
+ *
+ */
+
+
 
 var OFFSET = 6;
 
@@ -446,6 +511,16 @@ function Slider(x,y,range,id,dcallback,ucallback){
 
 };
 
+/*
+ * ColorPicker.js
+ *
+ * Description: Contains the UIElement in which the user
+				changes the system color.
+ *
+ *
+ */
+
+	
 ColorPicker.prototype = new UIElement();
 
 function ColorPicker(x,y,id,color){
@@ -498,10 +573,10 @@ function ColorPicker(x,y,id,color){
 
 
 $(document).ready(function(){
-	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,40);
+	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
-	var	brush_viewer = new BrushViewer(240,460,'bview',clr,brush);
+	var	brush_viewer = new Painter(240,460,'bview',clr,brush,0.2,40);
 	
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
@@ -515,6 +590,6 @@ $(document).ready(function(){
 	//long 0.2
 
 	
-	surface.setBrush(brush);
+	surface.setPainter(brush_viewer);
 	
 });

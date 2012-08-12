@@ -1,8 +1,8 @@
 $(document).ready(function(){
-	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png',0.2,40);
+	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
-	var	brush_viewer = new BrushViewer(240,460,'bview',clr,brush);
+	var	brush_viewer = new Painter(240,460,'bview',clr,brush,0.2,40);
 	
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
@@ -16,6 +16,6 @@ $(document).ready(function(){
 	//long 0.2
 
 	
-	surface.setBrush(brush);
+	surface.setPainter(brush_viewer);
 	
 });

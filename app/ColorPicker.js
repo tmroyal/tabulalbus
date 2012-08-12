@@ -1,3 +1,13 @@
+/*
+ * ColorPicker.js
+ *
+ * Description: Contains the UIElement in which the user
+				changes the system color.
+ *
+ *
+ */
+
+	
 ColorPicker.prototype = new UIElement();
 
 function ColorPicker(x,y,id,color){

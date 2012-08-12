@@ -1,3 +1,12 @@
+/*
+ * Surface
+ *
+ * Description: Contains the canvas element, and a reference to all painters
+ *				and facilitates all drawing to the screen
+ *
+ *
+ */
+
 Surface.prototype = new UIElement();
 
 function Surface(x,y,w,h,id){
@@ -19,19 +28,17 @@ function Surface(x,y,w,h,id){
 					'border-width': '2px'});
 					
 		$('#' + this_.id).bind('mousedown',this_.mousedown);
-
-				
+		
 		this_.setPosition(x,y);
 		this_.canv_element = document.getElementById(this_.id);
 		this_.canvas = this_.canv_element.getContext('2d');
-
 	};
 	
 	this_.mousedown = function(e){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
 
-		this_.brush.dropBrush(x,y,this_.canvas);
+		this_.painter.dropBrush(x,y,this_.canvas);
 
 		$(document).bind('mousemove',this_.mousemove);
 		$(document).bind('mouseup',this_.mouseup);
@@ -41,14 +48,7 @@ function Surface(x,y,w,h,id){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
 		
-		//this_.canvas.beginPath();
-		// this_.canvas.moveTo(this_.oldX,this_.oldY);
-		// this_.canvas.lineTo(newX,newY);
-		// this_.canvas.stroke();
-		// 
-		// this_.oldX = newX;
-		// this_.oldY = newY;
-		this_.brush.moveBrush(x,y,this_.canvas);
+		this_.painter.moveBrush(x,y,this_.canvas);
 	};
 	
 	this_.mouseup = function(e){
@@ -56,8 +56,8 @@ function Surface(x,y,w,h,id){
 		$(document).unbind('mouseup');
 	}
 	
-	this_.setBrush = function(brush){
-		this_.brush = brush
+	this_.setPainter = function(painter){
+		this_.painter = painter;
 	}
 	
 	this_.init(x,y);

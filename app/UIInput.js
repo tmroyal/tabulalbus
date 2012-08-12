@@ -1,3 +1,12 @@
+/*
+ * UIElement.js
+ *
+ * Description: Bass class for all UI elements that support user interaction.
+ *
+ */
+
+
+
 UIInput.prototype = new UIElement();
 
 function UIInput(x,y,id,onclick){

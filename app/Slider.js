@@ -1,3 +1,13 @@
+/*
+ * Slider.js
+ *
+ * Description: UIElement that supports the addition of a slider.
+ *
+ *
+ */
+
+
+
 var OFFSET = 6;
 
 HSliderButton.prototype = UIInput();

@@ -1,3 +1,13 @@
+/*
+ * Button
+ *
+ * Description: Class for a button. 
+ *
+ *
+ */
+
+
+
 Button.prototype = UIInput();
 
 function Button(x,y,id,onclick){

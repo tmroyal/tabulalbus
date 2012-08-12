@@ -1,3 +1,12 @@
+/*
+ * Color.js
+ *
+ * Description: Contains the color with all applicable callbacks so that 
+ 				it's value is populated to all applicable places.
+ *
+ *
+ */
+
 
 function Color(h,s,v){
 	var this_ = this;

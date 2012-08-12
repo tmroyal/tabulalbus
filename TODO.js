@@ -20,7 +20,7 @@ Brushes
 ----------------
 1. Implement file saving
 ----------------
-1. Try to break
+1. Try to break  
 2. Test on other platforms'
 
 
