@@ -6,8 +6,6 @@
  *
  */
 
-
-
 function UIElement(x,y,id){
 	var this_ = this;
 	
@@ -23,13 +21,25 @@ function UIElement(x,y,id){
 			'left': this_.x+'px'
 		});
 	};
-	this_.addImage = function(x,y,uri) {
-		$('<img/>',{
-			'src' : uri
-		}).appendTo('body').css({
-			'top' : y,
-			'left' : x
-		});
+	this_.addImage = function(x,y,uri,w,h) {
+		if (w || h){
+			$('<img/>',{
+				'src' : uri
+			}).appendTo('body').css({
+				'top' : y,
+				'left' : x,
+				'width' : w,
+				'height' : h
+			});
+			
+		}else{
+			$('<img/>',{
+				'src' : uri
+			}).appendTo('body').css({
+				'top' : y,
+				'left' : x
+			});
+		}
 	};	
 }
 

@@ -10,6 +10,7 @@ new compressor.minify({
 				//,'./app/RandomBrush.js'
 				//,'./app/DirectionBrush.js'
 				,'./app/BrushSizeSlider.js'
+				,'./app/BrushSelector.js'
 				,'./app/Surface.js'
 				,'./app/Painter.js'
 				,'./app/Color.js'

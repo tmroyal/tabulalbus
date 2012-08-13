@@ -1,10 +1,11 @@
 
 $(document).ready(function(){
 	
-	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
+	var lngbrush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
+	var rndbrush = new Brush('./img/roundBrush.png','./img/roundBrush.png');
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
-	var	painter = new Painter(240,460,'bview',clr,brush,0.2,40);
+	var	painter = new Painter(240,460,'bview',clr,lngbrush,0.2,40);
 	
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
@@ -17,7 +18,7 @@ $(document).ready(function(){
 	//thin 0.6
 	//long 0.2
 	var brushSizeSlider = new BrushSizeSlider(360,460,200,'brSzSl',painter);
-
+	var brushSelector = new BrushSelector(360,500,'brsel',painter,[lngbrush,rndbrush]);
 	
 	surface.setPainter(painter);
 	

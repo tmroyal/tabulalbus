@@ -12,6 +12,7 @@ function Brush(druri, drpuri){
 		drag_img_loaded = false,
 		drop_img_loaded = false;
 
+	this_.img_uri = druri;
 
 	this_.drag_img = new Image();
 	this_.drag_img.onload = function(){
@@ -31,6 +32,5 @@ function Brush(druri, drpuri){
 		canvas.scale(scaling,scaling);
 		canvas.drawImage(this_.drag_img, -this_.drag_img.width/2, -this_.drag_img.height/2);
 		canvas.restore();
-		if(drag_img_loaded==false){console.log('theres the problem');}
 	}
 };

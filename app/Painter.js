@@ -22,7 +22,7 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 
 	this_.setBrush = function(brush){
 		this_.brush = brush;
-		this_.updateColor(this_.curcolor);
+		this_.updateColor(this_.curcolor.color);
 	};
 
 	this_.init = function(x,y) {

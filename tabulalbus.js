@@ -17,6 +17,7 @@ function Brush(druri, drpuri){
 		drag_img_loaded = false,
 		drop_img_loaded = false;
 
+	this_.img_uri = druri;
 
 	this_.drag_img = new Image();
 	this_.drag_img.onload = function(){
@@ -36,7 +37,6 @@ function Brush(druri, drpuri){
 		canvas.scale(scaling,scaling);
 		canvas.drawImage(this_.drag_img, -this_.drag_img.width/2, -this_.drag_img.height/2);
 		canvas.restore();
-		if(drag_img_loaded==false){console.log('theres the problem');}
 	}
 };
 /*
@@ -55,6 +55,41 @@ function BrushSizeSlider (x,y,range,id,painter_) {
 
 	addImage(x,y,"./img/Size.png");
 }
+/*
+ * BrushSelector.ks
+ *
+ * Description: Displays brush selector buttons, updates painter with user selections
+ */
+
+function BrushSelector(x,y,id,painter_,brushes_) {
+	var this_ = this,
+		painter = painter_,
+		brushes = brushes_,
+		SPACING = 10,
+		b_size = 50,
+		b_pad = 15,
+		buttons=[];
+	this_.x = x;
+	this_.y = y;
+	this_.id = id;
+	
+	
+	var setBrush_callback = function(ind){
+		return function(e){painter.setBrush(brushes[ind]);};
+	};
+	
+	var addButtons = (function(brushes){
+		for (var i=0; i < brushes.length; i++) {
+			// var cb = function(){
+			// 	painter.setBrush(brushes[i]);
+			// };
+			var tx = x+i*(b_size+SPACING);
+
+			buttons.push( new Button( tx, y, this_.id+String(i), setBrush_callback(i),b_size,b_size) );
+			buttons[i].addImage(tx+b_pad/2, y+b_pad/2, brushes[i].img_uri, b_size-b_pad, b_size-b_pad);
+		};
+	})(brushes_);	
+};
 /*
  * Surface
  *
@@ -148,7 +183,7 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 
 	this_.setBrush = function(brush){
 		this_.brush = brush;
-		this_.updateColor(this_.curcolor);
+		this_.updateColor(this_.curcolor.color);
 	};
 
 	this_.init = function(x,y) {
@@ -342,16 +377,37 @@ function UIInput(x,y,id,onclick){
 	var this_ = this;
 	
 	UIElement.call(this_,x,y,id);
-	this_.onclick = onclick || {};
+	console.log(this_.id+onclick);
+	this_.onclick = onclick; //|| function(){console.log("unused callback"+this_.id)};
 	
 	this_.enable = function(){
 		this_.enabled = true;
 		$('#'+this_.id).click(this_.onclick);
 	};
 	
-	this_.disable = function(){
-		this_.enabled = false;
-		$('#'+this_.id).unbind('click');
+	// this_.disable = function(){
+	// 	this_.enabled = false;
+	// 	$('#'+this_.id).unbind('click');
+	// };
+	// 
+	this_.addImage = function(x,y,uri,w,h) {
+		if (w || h){
+			$('<img/>',{
+				'src' : uri
+			}).appendTo('body').css({
+				'top' : y,
+				'left' : x,
+				'width' : w,
+				'height' : h
+			}).click(this_.onclick);	
+		}else{
+			$('<img/>',{
+				'src' : uri
+			}).appendTo('body').css({
+				'top' : y,
+				'left' : x
+			}).click(this_.onclick);
+		};
 	};
 
 };
@@ -362,8 +418,6 @@ function UIInput(x,y,id,onclick){
  *
  *
  */
-
-
 
 function UIElement(x,y,id){
 	var this_ = this;
@@ -380,13 +434,25 @@ function UIElement(x,y,id){
 			'left': this_.x+'px'
 		});
 	};
-	this_.addImage = function(x,y,uri) {
-		$('<img/>',{
-			'src' : uri
-		}).appendTo('body').css({
-			'top' : y,
-			'left' : x
-		});
+	this_.addImage = function(x,y,uri,w,h) {
+		if (w || h){
+			$('<img/>',{
+				'src' : uri
+			}).appendTo('body').css({
+				'top' : y,
+				'left' : x,
+				'width' : w,
+				'height' : h
+			});
+			
+		}else{
+			$('<img/>',{
+				'src' : uri
+			}).appendTo('body').css({
+				'top' : y,
+				'left' : x
+			});
+		}
 	};	
 }
 
@@ -403,12 +469,12 @@ function UIElement(x,y,id){
 
 Button.prototype = UIInput();
 
-function Button(x,y,id,onclick){
+function Button(x,y,id,onclick,w,h){
 	var this_ = this;
-	
-	UIInput.call(this,x,y,id,onclick)
-	this_.init(x,y);
-	
+	UIInput.call(this,x,y,id,onclick);
+	this_.w = w;
+	this_.h = h;
+		
 	this_.init = function(x,y){
 		$('<div/>',{
 			'class': 'button bordered',
@@ -416,8 +482,16 @@ function Button(x,y,id,onclick){
 		}).appendTo('body');
 	
 		this.setPosition(x,y);
-		$('#'+this.id).click(this.onclick);
+		$('#'+this_.id).click(this_.onclick);
+		if(this_.w || this_.h){
+			$('#'+this_.id).css({
+				'width':this_.w,
+				'height':this_.h
+			});
+		}
 	};
+	
+	this_.init(x,y);
 };
 
 /*
@@ -602,10 +676,11 @@ function ColorPicker(x,y,id,color){
 
 $(document).ready(function(){
 	
-	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
+	var lngbrush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
+	var rndbrush = new Brush('./img/roundBrush.png','./img/roundBrush.png');
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
-	var	painter = new Painter(240,460,'bview',clr,brush,0.2,40);
+	var	painter = new Painter(240,460,'bview',clr,lngbrush,0.2,40);
 	
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
@@ -618,7 +693,7 @@ $(document).ready(function(){
 	//thin 0.6
 	//long 0.2
 	var brushSizeSlider = new BrushSizeSlider(360,460,200,'brSzSl',painter);
-
+	var brushSelector = new BrushSelector(360,500,'brsel',painter,[lngbrush,rndbrush]);
 	
 	surface.setPainter(painter);
 	
