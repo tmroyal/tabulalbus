@@ -1,6 +1,9 @@
-1. Brush Scaler
 2. Brush Picker
-3. Canvas Saver
+3. More Brushes
+4. Canvas Saver
+5. Canvas cursor (through psudoclass :active, see jquery docs)
+
+1. Communications
 
 
 1. color selections

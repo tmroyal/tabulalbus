@@ -25,7 +25,8 @@ function Surface(x,y,w,h,id){
 			.css({
 				'border-style':'solid',
 					'border-color': '#6e6e6e',
-					'border-width': '2px'});
+					'border-width': '2px',
+					'cursor': 'crosshair'});
 					
 		$('#' + this_.id).bind('mousedown',this_.mousedown);
 		
@@ -37,9 +38,11 @@ function Surface(x,y,w,h,id){
 	this_.mousedown = function(e){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
-
+		
 		this_.painter.dropBrush(x,y,this_.canvas);
-
+		e.originalEvent.preventDefault();
+		
+		
 		$(document).bind('mousemove',this_.mousemove);
 		$(document).bind('mouseup',this_.mouseup);
 	};

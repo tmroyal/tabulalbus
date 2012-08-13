@@ -10,7 +10,7 @@ BrushSizeSlider.prototype = new Slider()
 function BrushSizeSlider (x,y,range,id,painter_) {
 	var this_ = this,
 		painter = painter_;
-	Slider.call(this,x+50,y,range,id,undefined,painter.userSetSize);
+	Slider.call(this,x+35,y,range,id,undefined,painter.userSetSize);
 
 	addImage(x,y,"./img/Size.png");
 }

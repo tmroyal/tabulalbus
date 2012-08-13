@@ -51,7 +51,7 @@ BrushSizeSlider.prototype = new Slider()
 function BrushSizeSlider (x,y,range,id,painter_) {
 	var this_ = this,
 		painter = painter_;
-	Slider.call(this,x+50,y,range,id,undefined,painter.userSetSize);
+	Slider.call(this,x+35,y,range,id,undefined,painter.userSetSize);
 
 	addImage(x,y,"./img/Size.png");
 }
@@ -82,7 +82,8 @@ function Surface(x,y,w,h,id){
 			.css({
 				'border-style':'solid',
 					'border-color': '#6e6e6e',
-					'border-width': '2px'});
+					'border-width': '2px',
+					'cursor': 'crosshair'});
 					
 		$('#' + this_.id).bind('mousedown',this_.mousedown);
 		
@@ -94,9 +95,11 @@ function Surface(x,y,w,h,id){
 	this_.mousedown = function(e){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
-
+		
 		this_.painter.dropBrush(x,y,this_.canvas);
-
+		e.originalEvent.preventDefault();
+		
+		
 		$(document).bind('mousemove',this_.mousemove);
 		$(document).bind('mouseup',this_.mouseup);
 	};
@@ -596,7 +599,9 @@ function ColorPicker(x,y,id,color){
 
 
 
+
 $(document).ready(function(){
+	
 	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
@@ -612,7 +617,7 @@ $(document).ready(function(){
 	//roung 0.2
 	//thin 0.6
 	//long 0.2
-	var brushSizeSlider = new BrushSizeSlider(400,460,300,'brSzSl',painter);
+	var brushSizeSlider = new BrushSizeSlider(360,460,200,'brSzSl',painter);
 
 	
 	surface.setPainter(painter);

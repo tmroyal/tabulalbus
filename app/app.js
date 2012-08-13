@@ -1,4 +1,6 @@
+
 $(document).ready(function(){
+	
 	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
@@ -14,7 +16,7 @@ $(document).ready(function(){
 	//roung 0.2
 	//thin 0.6
 	//long 0.2
-	var brushSizeSlider = new BrushSizeSlider(400,460,300,'brSzSl',painter);
+	var brushSizeSlider = new BrushSizeSlider(360,460,200,'brSzSl',painter);
 
 	
 	surface.setPainter(painter);
