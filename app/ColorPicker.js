@@ -3,8 +3,6 @@
  *
  * Description: Contains the UIElement in which the user
 				changes the system color.
- *
- *
  */
 
 	

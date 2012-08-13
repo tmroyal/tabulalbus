@@ -50,7 +50,7 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 	}
 
 	this_.updateColor = function(color) {
-		this_.canvas.clearRect(0,0);
+		this_.canvas.clearRect(0,0,100,100);
 		this_.brush.stamp(this_.canvas,scaling);
 	    
 		Caman("#"+id, function () {
@@ -100,9 +100,18 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 		scaling = size/100.0;
 	};
 	
+	this_.userSetSize = function(size){
+		// this function exists for uielements, like Slider, 
+		// whose callbacks return values in the range of 0.0 and 1.0
+		scaling = size;
+		//this_.brush.stamp(this_.canvas,scaling);
+		// console.log(this_.curcolor);
+		this_.updateColor(this_.curcolor.color);
+	}
+	
 	var draw = function(x,y,ang,canvas,img){
 		canvas.save(); 
-        canvas.globalAlpha = 0.4;
+        canvas.globalAlpha = 0.3;
 		canvas.translate(x, y);
 		canvas.rotate(ang);
 		//canvas.scale(scaling,scaling);

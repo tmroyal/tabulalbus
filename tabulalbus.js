@@ -40,6 +40,22 @@ function Brush(druri, drpuri){
 	}
 };
 /*
+ * BrushSizeSlider.js
+ *
+ * Description: Child of Slider, allows for the setting of the brush size.
+ *
+ *
+ */
+BrushSizeSlider.prototype = new Slider()
+
+function BrushSizeSlider (x,y,range,id,painter_) {
+	var this_ = this,
+		painter = painter_;
+	Slider.call(this,x+50,y,range,id,undefined,painter.userSetSize);
+
+	addImage(x,y,"./img/Size.png");
+}
+/*
  * Surface
  *
  * Description: Contains the canvas element, and a reference to all painters
@@ -157,7 +173,7 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 	}
 
 	this_.updateColor = function(color) {
-		this_.canvas.clearRect(0,0);
+		this_.canvas.clearRect(0,0,100,100);
 		this_.brush.stamp(this_.canvas,scaling);
 	    
 		Caman("#"+id, function () {
@@ -207,9 +223,18 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 		scaling = size/100.0;
 	};
 	
+	this_.userSetSize = function(size){
+		// this function exists for uielements, like Slider, 
+		// whose callbacks return values in the range of 0.0 and 1.0
+		scaling = size;
+		//this_.brush.stamp(this_.canvas,scaling);
+		// console.log(this_.curcolor);
+		this_.updateColor(this_.curcolor.color);
+	}
+	
 	var draw = function(x,y,ang,canvas,img){
 		canvas.save(); 
-        canvas.globalAlpha = 0.2;
+        canvas.globalAlpha = 0.3;
 		canvas.translate(x, y);
 		canvas.rotate(ang);
 		//canvas.scale(scaling,scaling);
@@ -484,6 +509,7 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 
 // ------------------------------------
 
+
 function Slider(x,y,range,id,dcallback,ucallback){
 	var this_ = this;
 	
@@ -516,8 +542,6 @@ function Slider(x,y,range,id,dcallback,ucallback){
  *
  * Description: Contains the UIElement in which the user
 				changes the system color.
- *
- *
  */
 
 	
@@ -576,20 +600,21 @@ $(document).ready(function(){
 	var brush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
-	var	brush_viewer = new Painter(240,460,'bview',clr,brush,0.2,40);
+	var	painter = new Painter(240,460,'bview',clr,brush,0.2,40);
 	
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
 	clr.add_callback(cp.setIndicator);
-	clr.add_broadcastee(brush_viewer.updateColor);
+	clr.add_broadcastee(painter.updateColor);
 	cp.set_pos(0,1,1); 
 	
 	var surface = new Surface(40,40,800,400,'surface');
 	//roung 0.2
 	//thin 0.6
 	//long 0.2
+	var brushSizeSlider = new BrushSizeSlider(400,460,300,'brSzSl',painter);
 
 	
-	surface.setPainter(brush_viewer);
+	surface.setPainter(painter);
 	
 });

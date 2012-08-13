@@ -90,6 +90,7 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 
 // ------------------------------------
 
+
 function Slider(x,y,range,id,dcallback,ucallback){
 	var this_ = this;
 	
