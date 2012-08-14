@@ -21,7 +21,7 @@ new compressor.minify({
 				,'./app/ColorPicker.js'
 				,'./app/app.js'
 			],
-    fileOut: 'tabulalbus.js',
+    fileOut: './public/tabulalbus.js',
     callback: function(err){
         console.log(err);
     }
