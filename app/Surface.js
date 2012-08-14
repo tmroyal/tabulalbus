@@ -33,6 +33,12 @@ function Surface(x,y,w,h,id){
 		this_.setPosition(x,y);
 		this_.canv_element = document.getElementById(this_.id);
 		this_.canvas = this_.canv_element.getContext('2d');
+        this_.canvas.beginPath();
+        this_.canvas.rect(0, 0, w, h);
+        this_.canvas.fillStyle = 'white';
+        this_.canvas.strokeStyle = 'white';
+        this_.canvas.fill();
+        this_.canvas.stroke();
 	};
 	
 	this_.mousedown = function(e){
@@ -61,6 +67,11 @@ function Surface(x,y,w,h,id){
 	
 	this_.setPainter = function(painter){
 		this_.painter = painter;
+	}
+	
+	this_.save = function(){
+		var dataURL = this_.canv_element.toDataURL();
+		open().document.write('<img src="'+dataURL+'"/>');
 	}
 	
 	this_.init(x,y);

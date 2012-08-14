@@ -125,6 +125,12 @@ function Surface(x,y,w,h,id){
 		this_.setPosition(x,y);
 		this_.canv_element = document.getElementById(this_.id);
 		this_.canvas = this_.canv_element.getContext('2d');
+        this_.canvas.beginPath();
+        this_.canvas.rect(0, 0, w, h);
+        this_.canvas.fillStyle = 'white';
+        this_.canvas.strokeStyle = 'white';
+        this_.canvas.fill();
+        this_.canvas.stroke();
 	};
 	
 	this_.mousedown = function(e){
@@ -153,6 +159,11 @@ function Surface(x,y,w,h,id){
 	
 	this_.setPainter = function(painter){
 		this_.painter = painter;
+	}
+	
+	this_.save = function(){
+		var dataURL = this_.canv_element.toDataURL();
+		open().document.write('<img src="'+dataURL+'"/>');
 	}
 	
 	this_.init(x,y);
@@ -377,7 +388,6 @@ function UIInput(x,y,id,onclick){
 	var this_ = this;
 	
 	UIElement.call(this_,x,y,id);
-	console.log(this_.id+onclick);
 	this_.onclick = onclick; //|| function(){console.log("unused callback"+this_.id)};
 	
 	this_.enable = function(){
@@ -415,8 +425,6 @@ function UIInput(x,y,id,onclick){
  * UIElement
  *
  * Description: Base class for all UI elements. 
- *
- *
  */
 
 function UIElement(x,y,id){
@@ -676,11 +684,17 @@ function ColorPicker(x,y,id,color){
 
 $(document).ready(function(){
 	
+	// brushes
 	var lngbrush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
 	var rndbrush = new Brush('./img/roundBrush.png','./img/roundBrush.png');
+	var thnbrush = new Brush('./img/thinBrush.png','./img/thinBrush.png');
+	var msybrush = new Brush('./img/messyBrush.png','./img/messyBrush.png');
+	
+	var brushes = [lngbrush,rndbrush,thnbrush,msybrush];
+	
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
-	var	painter = new Painter(240,460,'bview',clr,lngbrush,0.2,40);
+	var	painter = new Painter(240,460,'bview',clr,lngbrush,0.05,40);
 	
 	//brush_viewer.updateColor({r:230,g:100,b:120});
 	//clr.add_callback(brush_viewer.updateColor);
@@ -688,13 +702,18 @@ $(document).ready(function(){
 	clr.add_broadcastee(painter.updateColor);
 	cp.set_pos(0,1,1); 
 	
-	var surface = new Surface(40,40,800,400,'surface');
+	var surface = new Surface(40,40,725,400,'surface');
 	//roung 0.2
 	//thin 0.6
 	//long 0.2
-	var brushSizeSlider = new BrushSizeSlider(360,460,200,'brSzSl',painter);
-	var brushSelector = new BrushSelector(360,500,'brsel',painter,[lngbrush,rndbrush]);
+	var brushSizeSlider = new BrushSizeSlider(360,535,200,'brSzSl',painter).set(0.5);
 	
+	var brushSelector = new BrushSelector(360,460,'brsel',painter,brushes);
+	
+	var saveButton = new Button(660,460,'svbtn',surface.save,100,100)
+	saveButton.addImage(675,473,'./img/save.png');
+	saveButton.addImage(625,490,'./img/saveimage.png');
 	surface.setPainter(painter);
+	
 	
 });

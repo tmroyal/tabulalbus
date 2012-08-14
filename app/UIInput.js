@@ -13,7 +13,6 @@ function UIInput(x,y,id,onclick){
 	var this_ = this;
 	
 	UIElement.call(this_,x,y,id);
-	console.log(this_.id+onclick);
 	this_.onclick = onclick; //|| function(){console.log("unused callback"+this_.id)};
 	
 	this_.enable = function(){
