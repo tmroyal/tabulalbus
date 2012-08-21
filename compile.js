@@ -3,7 +3,7 @@
 var compressor = require('node-minify');
 
 new compressor.minify({ 
-    type: 'no-compress',
+    type: 'gcc',
     fileIn: [
 				'./app/UI/Brush.js'
 				,'./app/UI/BrushSizeSlider.js'
