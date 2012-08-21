@@ -2,26 +2,23 @@
 
 var compressor = require('node-minify');
 
-new compressor.minify({
+new compressor.minify({ 
     type: 'no-compress',
     fileIn: [
-				'./sugar/subclassOf.js'
-				,'./app/Brush.js'
-				//,'./app/RandomBrush.js'
-				//,'./app/DirectionBrush.js'
-				,'./app/BrushSizeSlider.js'
-				,'./app/BrushSelector.js'
-				,'./app/Surface.js'
-				,'./app/Painter.js'
-				,'./app/Color.js'
-				,'./app/UIInput.js'
-				,'./app/UIElement.js'
-				,'./app/Button.js'
-				,'./app/Slider.js'
-				,'./app/ColorPicker.js'
+				'./app/UI/Brush.js'
+				,'./app/UI/BrushSizeSlider.js'
+				,'./app/UI/BrushSelector.js'
+				,'./app/UI/Surface.js'
+				,'./app/UI/Painter.js'
+				,'./app/UI/Color.js'
+				,'./app/UI/UIInput.js'
+				,'./app/UI/UIElement.js'
+				,'./app/UI/Button.js'
+				,'./app/UI/Slider.js'
+				,'./app/UI/ColorPicker.js'
 				,'./app/app.js'
 			],
-    fileOut: './public/tabulalbus.js',
+    fileOut: './tabulalbus.js',
     callback: function(err){
         console.log(err);
     }

@@ -1,8 +1,3 @@
-function subclassOf(base) {
-    _subclassOf.prototype= base.prototype;
-    return new _subclassOf();
-}
-function _subclassOf() {};
 /*
  * Brush.js
  *
@@ -12,28 +7,21 @@ function _subclassOf() {};
  */
 
 
-function Brush(druri, drpuri){
+function Brush(uri){
 	var this_ = this,
-		drag_img_loaded = false,
-		drop_img_loaded = false;
-
-	this_.img_uri = druri;
-
+		img_loaded = false;
+	
+	this_.img_uri = uri;	
+	
 	this_.drag_img = new Image();
 	this_.drag_img.onload = function(){
 		drag_img_loaded = true;
 	};
-	this_.drag_img.src = druri;
-	
-	this_.drop_img = new Image();
-	this_.drop_img.onload = function(){
-		drop_img_loaded = true;
-	};
-	this_.drop_img.src = drpuri;
+	this_.drag_img.src = uri;
 	
 	this_.stamp = function(canvas, scaling){
 		canvas.save(); 
-		canvas.translate(50, 50);//what are the proper x and y
+		canvas.translate(50, 50);
 		canvas.scale(scaling,scaling);
 		canvas.drawImage(this_.drag_img, -this_.drag_img.width/2, -this_.drag_img.height/2);
 		canvas.restore();
@@ -66,13 +54,12 @@ function BrushSelector(x,y,id,painter_,brushes_) {
 		painter = painter_,
 		brushes = brushes_,
 		SPACING = 10,
-		b_size = 50,
-		b_pad = 15,
+		brushDisplaySize = 50,
+		brushDisplayPadding = 15,
 		buttons=[];
 	this_.x = x;
 	this_.y = y;
 	this_.id = id;
-	
 	
 	var setBrush_callback = function(ind){
 		return function(e){painter.setBrush(brushes[ind]);};
@@ -80,15 +67,31 @@ function BrushSelector(x,y,id,painter_,brushes_) {
 	
 	var addButtons = (function(brushes){
 		for (var i=0; i < brushes.length; i++) {
-			// var cb = function(){
-			// 	painter.setBrush(brushes[i]);
-			// };
-			var tx = x+i*(b_size+SPACING);
+			var tx = x+i*(brushDisplaySize+SPACING);
 
-			buttons.push( new Button( tx, y, this_.id+String(i), setBrush_callback(i),b_size,b_size) );
-			buttons[i].addImage(tx+b_pad/2, y+b_pad/2, brushes[i].img_uri, b_size-b_pad, b_size-b_pad);
+			// buttons is an array that is appended to
+			// using the push function
+			buttons.push( 
+				new Button( tx, 
+							y, 
+							this_.id+String(i), 
+							setBrush_callback(i),
+							brushDisplaySize,
+							brushDisplaySize
+							) 
+			);
+			
+			buttons[i].addImage(
+				tx+brushDisplayPadding/2, 
+				y+brushDisplayPadding/2, 
+				brushes[i].img_uri, 
+				brushDisplaySize-brushDisplayPadding, 
+				brushDisplaySize-brushDisplayPadding
+			);
 		};
-	})(brushes_);	
+	})
+	
+	addButtons(brushes_);
 };
 /*
  * Surface
@@ -238,7 +241,6 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 	this_.dropBrush = function(x,y,canvas){
 		prev_x = x;
 		prev_y = y;
-		//draw(prev_x,prev_y,Math.random(Math.pi*2),canvas,this_.drop_img);
 	};
 	
 	this_.moveBrush = function(x,y,canvas){
@@ -247,16 +249,13 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 		current_dist+=dist_ang.dist;
 		
 		if(current_dist>spacing){
-			//draw(x,y,dist_ang.ang,canvas,this_.drag_img);
 			draw(x,y,dist_ang.ang,canvas,this_.canvas_element);
 		}
 		while (current_dist>spacing){
 			var draw_x = prev_x+current_dist*Math.cos(dist_ang.ang),
 				draw_y = prev_y+current_dist*Math.sin(dist_ang.ang);
 			current_dist -= spacing;
-			//draw(draw_x,draw_y,dist_ang.ang,canvas,this_.drag_img);
 			draw(draw_x,draw_y,dist_ang.ang,canvas,this_.canvas_element);
-			//draw(draw_x,draw_y,Math.random(Math.pi*2),canvas,this_.drag_img);
 		}
 		prev_x = x;
 		prev_y = y;
@@ -276,8 +275,7 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
 		// this function exists for uielements, like Slider, 
 		// whose callbacks return values in the range of 0.0 and 1.0
 		scaling = size;
-		//this_.brush.stamp(this_.canvas,scaling);
-		// console.log(this_.curcolor);
+
 		this_.updateColor(this_.curcolor.color);
 	}
 	
@@ -286,7 +284,6 @@ function Painter(x,y,id,color,init_brush, spacing_perc, size){
         canvas.globalAlpha = 0.3;
 		canvas.translate(x, y);
 		canvas.rotate(ang);
-		//canvas.scale(scaling,scaling);
 		canvas.drawImage(img,-img.width/2,-img.height/2);
 		canvas.restore();        
 	};
@@ -380,26 +377,19 @@ function Color(h,s,v){
  *
  */
 
-
-
 UIInput.prototype = new UIElement();
 
 function UIInput(x,y,id,onclick){
 	var this_ = this;
 	
 	UIElement.call(this_,x,y,id);
-	this_.onclick = onclick; //|| function(){console.log("unused callback"+this_.id)};
+	this_.onclick = onclick;
 	
 	this_.enable = function(){
 		this_.enabled = true;
 		$('#'+this_.id).click(this_.onclick);
 	};
 	
-	// this_.disable = function(){
-	// 	this_.enabled = false;
-	// 	$('#'+this_.id).unbind('click');
-	// };
-	// 
 	this_.addImage = function(x,y,uri,w,h) {
 		if (w || h){
 			$('<img/>',{
@@ -540,7 +530,6 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 	};
 
 	this_.mouseMove = function(e){
-		// note, jquery rewrites 'this'
 		var new_x = e.pageX-OFFSET;
 
 		if(new_x > this_.x1 && new_x < this_.x2){
@@ -685,19 +674,17 @@ function ColorPicker(x,y,id,color){
 $(document).ready(function(){
 	
 	// brushes
-	var lngbrush = new Brush('./img/longBrush.png','./img/longBrushDown.png');
-	var rndbrush = new Brush('./img/roundBrush.png','./img/roundBrush.png');
-	var thnbrush = new Brush('./img/thinBrush.png','./img/thinBrush.png');
-	var msybrush = new Brush('./img/messyBrush.png','./img/messyBrush.png');
+	var lngbrush = new Brush('./img/longBrush.png');
+	var rndbrush = new Brush('./img/roundBrush.png');
+	var thnbrush = new Brush('./img/thinBrush.png');
+	var msybrush = new Brush('./img/messyBrush.png');
 	
 	var brushes = [lngbrush,rndbrush,thnbrush,msybrush];
 	
 	var clr = new Color(0,0,0,'color');
 	var cp = new ColorPicker(40,460,'cp',clr);
 	var	painter = new Painter(240,460,'bview',clr,lngbrush,0.05,40);
-	
-	//brush_viewer.updateColor({r:230,g:100,b:120});
-	//clr.add_callback(brush_viewer.updateColor);
+
 	clr.add_callback(cp.setIndicator);
 	clr.add_broadcastee(painter.updateColor);
 	cp.set_pos(0,1,1); 
