@@ -14,7 +14,13 @@ function Surface(x,y,w,h,id){
 	var this_ = this;
 	this_.w = w;
 	this_.h = h;
-		
+	
+
+	
+	var touchdown = function(){};
+	var touchmove = function(){};
+	var touchup = function(){};
+	
 	this_.init = function(x,y){
 		$('<canvas/>',{
 			'id':id
@@ -28,7 +34,7 @@ function Surface(x,y,w,h,id){
 					'border-width': '2px',
 					'cursor': 'crosshair'});
 					
-		$('#' + this_.id).bind('mousedown',this_.mousedown);
+		$('#' + this_.id).bind(downEvent,downCallback);
 		
 		this_.setPosition(x,y);
 		this_.canv_element = document.getElementById(this_.id);
@@ -41,29 +47,63 @@ function Surface(x,y,w,h,id){
         this_.canvas.stroke();
 	};
 	
-	this_.mousedown = function(e){
+	// mouse functions
+	
+	var mousedown = function(e){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
-		
+				
 		this_.painter.dropBrush(x,y,this_.canvas);
 		e.originalEvent.preventDefault();
 		
-		
-		$(document).bind('mousemove',this_.mousemove);
-		$(document).bind('mouseup',this_.mouseup);
+		$(document).bind(moveEvent,moveCallback);
+		$(document).bind(upEvent,upCallback);
 	};
 	
-	this_.mousemove = function(e){
+	var mousemove = function(e){
 		var x = e.pageX-this_.canv_element.offsetLeft;
 		var y = e.pageY-this_.canv_element.offsetTop;
-		
+				
 		this_.painter.moveBrush(x,y,this_.canvas);
 	};
 	
-	this_.mouseup = function(e){
-		$(document).unbind('mousemove');
-		$(document).unbind('mouseup');
+	var mouseup = function(e){
+		$(document).unbind(moveEvent);
+		$(document).unbind(upEvent);
 	}
+	
+	// touch functions-----------
+	
+	
+	var touchdown = function(e){
+		var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+      
+		var x = touch.pageX-this_.canv_element.offsetLeft;
+		var y = touch.pageY-this_.canv_element.offsetTop;
+				
+		this_.painter.dropBrush(x,y,this_.canvas);
+		e.originalEvent.preventDefault();
+		
+		$(document).bind(moveEvent,moveCallback);
+		$(document).bind(upEvent,upCallback);
+	};
+	
+	var touchmove = function(e){
+		var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+		
+		var x = touch.pageX-this_.canv_element.offsetLeft;
+		var y = touch.pageY-this_.canv_element.offsetTop;
+		e.originalEvent.preventDefault();
+				
+		this_.painter.moveBrush(x,y,this_.canvas);
+	};
+	
+	var touchup = function(e){
+		$(document).unbind(moveEvent);
+		$(document).unbind(upEvent);
+	}
+	
+	//-----------
 	
 	this_.setPainter = function(painter){
 		this_.painter = painter;
@@ -73,6 +113,15 @@ function Surface(x,y,w,h,id){
 		var dataURL = this_.canv_element.toDataURL();
 		open().document.write('<img src="'+dataURL+'"/>');
 	}
+	
+	
+	var downEvent=((document.ontouchstart!==null)?'mousedown':'touchstart');
+	var moveEvent=((document.ontouchmove!==null)?'mousemove':'touchmove');
+	var upEvent=((document.ontouchstart!==null)?'mouseup':'touchend');
+	
+	var downCallback = (downEvent=='mousedown') ? mousedown : touchdown;
+	var moveCallback = (moveEvent=='mousemove') ? mousemove : touchmove;
+	var upCallback = (upEvent=='mouseup') ? mouseup : touchup;
 	
 	this_.init(x,y);
 };

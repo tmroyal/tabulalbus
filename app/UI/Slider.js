@@ -23,7 +23,6 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 	this_.down_callback = down_callback || function(){};
 	this_.up_callback = up_callback || function(){};
 
-
 	this_.init = function(x,y) {
 		$('<div/>',{
 			'class': 'slider_button bordered',
@@ -32,11 +31,23 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 	
 		this_.setPosition(x,y);
 
-		$('#'+this_.id).bind('mousedown',this_.mouseDown);
+		$('#'+this_.id).bind(downEvent,down);
 	};
-
-	this_.mouseMove = function(e){
+	
+	var mousemove = function(e){
 		var new_x = e.pageX-OFFSET;
+		move(new_x);
+	}
+	
+	var touchmove = function(e){
+		var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+		var new_x = touch.pageX-OFFSET;
+		e.originalEvent.preventDefault();
+		
+		move(new_x);
+	}
+
+	var move = function(new_x){
 
 		if(new_x > this_.x1 && new_x < this_.x2){
 			this_.setPosition(new_x,this_.y);
@@ -50,11 +61,22 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 		}
 	};
 
-	this_.mouseUp = function(e){
-		$(document).unbind('mouseup');
-		$(document).unbind('mousemove');
-		
+	var mouseup = function(e){
 		var new_x = e.pageX-OFFSET;
+		
+		up(new_x);
+	};
+	
+	var touchup = function(e){
+		var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+		var new_x = touch.pageX-OFFSET;
+		e.originalEvent.preventDefault();
+		up(new_x);
+	}
+	
+	var up = function(new_x){
+		$(document).unbind(upEvent);
+		$(document).unbind(moveEvent);
 		
 		if(new_x > this_.x1 && new_x < this_.x2){
 			this_.setPosition(new_x,this_.y);
@@ -66,12 +88,12 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 			this_.setPosition(this_.x2,this_.y);
 			this_.up_callback(1);
 		}
-	};
+	}
 
 
-	this_.mouseDown = function(e) {
-		$(document).bind('mousemove',this_.mouseMove);
-		$(document).bind('mouseup',this_.mouseUp);
+	var down = function(e) {
+		$(document).bind(moveEvent,moveCallback);
+		$(document).bind(upEvent,upCallback);
 	};
 	
 	this_.set = function(v){
@@ -82,6 +104,13 @@ function HSliderButton(x,y,range,id,down_callback,up_callback){
 		this_.up_callback(v);
 		this_.setPosition(this_.x,this_.y);
 	};
+	
+	var downEvent=((document.ontouchstart!==null)?'mousedown':'touchstart');
+	var moveEvent=((document.ontouchmove!==null)?'mousemove':'touchmove');
+	var upEvent=((document.ontouchstart!==null)?'mouseup':'touchend');
+	
+	var moveCallback = (moveEvent=='mousemove') ? mousemove : touchmove;
+	var upCallback = (upEvent=='mouseup') ? mouseup : touchup;
 	
 	this_.init(x,y);
 	
